@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Functions used to generate content. """
 import os
 import math
