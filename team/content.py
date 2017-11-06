@@ -18,7 +18,7 @@ from numpy import arange, random
 from plotly.graph_objs import Layout, Box, Scatter, Scattergl, Scatter3d, Heatmap
 
 
-from .cache import cache
+from . import cache
 # from .cluster_color_scale import CLUSTER_COLORS
 
 

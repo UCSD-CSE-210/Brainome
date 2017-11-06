@@ -1,15 +1,24 @@
 from flask import Flask
 from flask_appconfig import AppConfig
 from flask_bootstrap import Bootstrap
+from flask_cache import Cache
+from flask_nav import Nav
+from flask_compress import Compress
+from flask.ext.htmlmin import HTMLMIN
+from flask.json import JSONEncoder
 
-from .nav import nav
-from .cache import cache
-from .compress import compress, htmlmin
-from .json import MiniJSONEncoder
+cache = Cache()
+nav = Nav()
+compress = Compress()
+htmlmin = HTMLMIN()
+
+class MiniJSONEncoder(JSONEncoder):
+    """Minify JSON output."""
+    item_separator = ','
+    key_separator = ':'
 
 def create_app(configfile=None):
     app = Flask(__name__)
-
     AppConfig(app)
     Bootstrap(app)
     # EAM : Set limit on the number of items in cache (RAM)

@@ -9,8 +9,8 @@ from .content import get_cluster_plot, search_gene_names, \
     get_mch_scatter, get_mch_box, get_mch_box_two_species, \
     find_orthologs, FailToGraphException, get_corr_genes, \
     gene_id_to_name, randomize_cluster_colors, get_mch_heatmap
-from .nav import nav
-from .cache import cache
+from . import nav
+from . import cache
 from os import walk
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
