@@ -2,8 +2,8 @@
 
 For actual content generation see the content.py module.
 """
-from flask import Blueprint, render_template, jsonify, request, redirect, current_app
-from flask_nav.elements import Navbar, Link
+from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash
+from flask_nav.elements import Navbar, Link, View
 
 from .content import get_cluster_plot, search_gene_names, \
     get_mch_scatter, get_mch_box, get_mch_box_two_species, \
@@ -12,6 +12,7 @@ from .content import get_cluster_plot, search_gene_names, \
 from . import nav
 from . import cache
 from os import walk
+from .forms import LoginForm
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
@@ -20,9 +21,9 @@ dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
 dir_list_links=[Link(x, x) for x in dir_list]
 
+
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))
-
 
 # Visitor routes
 @frontend.route('/')
@@ -140,3 +141,10 @@ def randomize_colors():
 def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     query = request.args.get('q', 'MustHaveAQueryString')
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
+
+@frontend.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        flash('Invalid email or password.', 'form-error')
+    return render_template('account/login.html', form=form)
