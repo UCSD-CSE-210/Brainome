@@ -105,8 +105,8 @@ deactivate
 ```
 3. Linking code to downloaded data.  You will need to modify 2 files: "prod/scmdb_py/default_config.py", and "dev/scmdb_py_dev/default_config.py"  For now, this will just point to the published data (the 
 ```
-DATA_DIR = 'Users/karanuppal/PycharmProjects/scmdb_py'
-# DATA_DIR = 'path/to/scmdb_py'
+DATA_DIR = 'path/to/scmdb_py'
+# e.g. DATA_DIR = 'Users/karanuppal/PycharmProjects/scmdb_py'
 ```
 
 5. Activate the Virtual environment.
