@@ -117,7 +117,7 @@ source venv/bin/activate
 ```
 pip freeze
 ```
-7. Start the Application on port 5000.
+7. Start the Application on port 5000. (NOTE: the argument for --app is either a folder or a file, so make sure if you run --app=team that you are in the root directory)
 ```
 flask --app=team serve --port 5000
 ```
