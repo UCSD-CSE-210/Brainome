@@ -1,13 +1,12 @@
 import React from 'react'
 import { render } from 'react-dom'
-import TestContainer from '../containers/testContainer'
+import GraphComponent from '../components/graphComponent'
 import configureStore from '../stores/store'
 import { Provider } from 'react-redux'
+import graphPage from '../../templates/layouts/base.html'
 
 let initialState = {
- test:{
- 	data:"Yella My React Redux App is on"
- }
+
 }
 
 
@@ -15,7 +14,7 @@ let store = configureStore(initialState)
 
 render(
   <Provider store={store}>
-    <TestContainer />
+    <GraphComponent />
   </Provider>,
   document.getElementById('app') 
 )
