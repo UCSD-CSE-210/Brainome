@@ -83,13 +83,13 @@ git clone -v https://github.com/UCSD-CSE-210/Brainome.git
 2. Setup the Virtual Environment by following the below steps.
 ```
 pip install virtualenv
-cd Brainome/prod/scmdb_py/
+cd Brainome/prod
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
 deactivate
 
-cd ../../dev/scmdb_py_dev
+cd ../../dev
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
