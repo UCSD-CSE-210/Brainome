@@ -86,12 +86,14 @@ pip install virtualenv
 cd Brainome/prod
 virtualenv venv
 source venv/bin/activate
+cd scmdb_py
 pip install -r requirements.txt
 deactivate
 
 cd ../../dev
 virtualenv venv
 source venv/bin/activate
+cd scmdb_py_dev
 pip install -r requirements.txt
 deactivate
 
