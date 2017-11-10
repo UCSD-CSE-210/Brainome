@@ -26,6 +26,10 @@ module.exports = {
        { test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.wav$|\.mp3$/,
         loader: require.resolve("file-loader") + "?name=../[path][name].[ext]"
        },
+        {
+            test: /\.(html)$/,
+            loader: 'html-loader',
+        }
       //{ test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.eot$/, loader: "url" }
     ]
   },
