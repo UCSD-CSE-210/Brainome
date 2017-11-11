@@ -8,13 +8,21 @@ from flask_assets import Environment
 from flask_compress import Compress
 from flask.ext.htmlmin import HTMLMIN
 from flask.json import JSONEncoder
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 from .assets import app_css, app_js, vendor_css, vendor_js
 
 cache = Cache()
 nav = Nav()
+db = SQLAlchemy()
 compress = Compress()
 htmlmin = HTMLMIN()
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Set up Flask-Login
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'frontend.login'
 
 class MiniJSONEncoder(JSONEncoder):
     """Minify JSON output."""
@@ -26,6 +34,7 @@ def create_app(configfile=None):
     app.secret_key = 's3cr3t'
     AppConfig(app)
     Bootstrap(app)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'user-login.sqlite')
     # EAM : Set limit on the number of items in cache (RAM)
     cache.init_app(app, config={'CACHE_TYPE': 'simple', 'CACHE_THRESHOLD': 1000})
 
@@ -48,7 +57,7 @@ def create_app(configfile=None):
     app.json_encoder = MiniJSONEncoder
 
     nav.init_app(app)
-
+    login_manager.init_app(app)
     compress.init_app(app)
     htmlmin.init_app(app)
 
