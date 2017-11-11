@@ -35,6 +35,7 @@ def create_app(configfile=None):
     AppConfig(app)
     Bootstrap(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'user-login.sqlite')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     # EAM : Set limit on the number of items in cache (RAM)
     cache.init_app(app, config={'CACHE_TYPE': 'simple', 'CACHE_THRESHOLD': 1000})
 
@@ -57,6 +58,7 @@ def create_app(configfile=None):
     app.json_encoder = MiniJSONEncoder
 
     nav.init_app(app)
+    db.init_app(app)
     login_manager.init_app(app)
     compress.init_app(app)
     htmlmin.init_app(app)
