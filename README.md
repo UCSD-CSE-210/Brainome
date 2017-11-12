@@ -52,22 +52,22 @@ root/
 1. Download all of the data. First go to the directory that you would like the data to be in. 
 ```
 mkdir scmdb_py_newdata
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/* scmdb_py_newdata
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/* scmdb_py_newdata
 mkdir scmdb_py
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py/data scmdb_py
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py/data scmdb_py
 ```
 2. Download subset of data. First go to the directory that you would like the data to be in.
 ```
 mkdir scmdb_py_newdata
-rsync <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/* scmdb_py_newdata
+rsync <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/* scmdb_py_newdata
 cd scmdb_py_newdata
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/human_MB_EB scmdb_py_newdata
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/human_MB_EB scmdb_py_newdata
 
 # Go back out to the root directory
 cd ../../..
 mkdir scmdb_py
-rsync <username>@brainome.ucsd.edu/srv/scmdb_py/data
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/mmu scmdb_py
+rsync <username>@brainome.ucsd.edu:/srv/scmdb_py/data
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/mmu scmdb_py
 ```
 
 Using rsync command: rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/
