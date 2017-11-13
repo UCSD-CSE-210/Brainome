@@ -4,7 +4,8 @@ For actual content generation see the content.py module.
 """
 from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash
 from flask_nav.elements import Navbar, Link, View
-
+from flask_login import (current_user, login_required, login_user,
+                         logout_user)
 from .content import get_cluster_plot, search_gene_names, \
     get_mch_scatter, get_mch_box, get_mch_box_two_species, \
     find_orthologs, FailToGraphException, get_corr_genes, \
@@ -13,6 +14,7 @@ from . import nav
 from . import cache
 from os import walk
 from .forms import LoginForm
+from .user import User
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
@@ -146,5 +148,11 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Invalid email or password.', 'form-error')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is not None and user.password_hash is not None and \
+                user.verify_password(form.password.data):
+            login_user(user, form.remember_me.data)
+            flash('You are now logged in. Welcome back!', 'form-error')
+        else:
+            flash('Invalid email or password.', 'form-error')
     return render_template('account/login.html', form=form)
