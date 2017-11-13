@@ -54,7 +54,7 @@ root/
 mkdir scmdb_py_newdata
 rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/* scmdb_py_newdata
 mkdir scmdb_py
-rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py/data scmdb_py
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py/data/* scmdb_py
 ```
 2. Download subset of data. First go to the directory that you would like the data to be in.
 ```
