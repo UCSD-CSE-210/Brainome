@@ -8,4 +8,6 @@ JSONIFY_PRETTYPRINT_REGULAR = False  # Disable pretty-printing to conserve netwo
 MINIFY_PAGE = True  # Minify HTML to conserve network transfer.
 
 
-DATA_DIR = '/Users/karanuppal/PycharmProjects/data'
+DATA_DIR = '/srv/scmdb_py/data'
+PUBLISHED_DATA_DIR = '/srv/scmdb_py/data'
+UNPUBLISHED_DATA_DIR = '/srv/scmdb_py_newdata/data'
