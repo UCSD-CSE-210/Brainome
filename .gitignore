@@ -4,4 +4,6 @@ __pycache__
 .DS_Store
 team/static
 default_config.py
-*.sqlite
+team/static/bundle.js
+default_config.py
+user-login.sqlite
