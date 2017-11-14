@@ -27,9 +27,9 @@ module.exports = {
         loader: require.resolve("file-loader") + "?name=../[path][name].[ext]"
        },
        {
-        test: /\.(html)$/,
-        loader: 'html-loader',
-       }
+        test: /\.html$/,
+           loader: 'html-loader'
+       },
       //{ test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$|\.eot$/, loader: "url" }
     ]
   },

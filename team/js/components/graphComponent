@@ -1,12 +1,11 @@
 import React,{Component} from 'react'
+import { render } from 'react-dom'
 import graphPage from '../../templates/layouts/base.html'
 
 export default class Test extends Component{
-    componentDidMount(){
-    }
-    render(){
-        return(
-            <div dangerouslySetInnerHTML={graphPage} />
+    render() {
+        return (
+            <div dangerouslySetInnerHTML={graphPage}/>
         )
     }
 }
