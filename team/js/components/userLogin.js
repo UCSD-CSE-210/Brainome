@@ -2,7 +2,8 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 import Paper from 'material-ui/Paper';
-import { validateUserName, validatePassword } from '../utils/misc';
+import { browserHistory } from 'react-router';
+import { validateUserName, validatePassword } from '../utils/validations';
 
 const style = {
     marginTop: 50,
@@ -23,7 +24,7 @@ export default class userLogin extends React.Component {
             password: '',
             userNameErrorText: null,
             passwordErrorText: null,
-            redirectTo: redirectRoute,
+            redirectTo: '/graphs',
             disabled: true,
         };
     }
@@ -54,6 +55,7 @@ export default class userLogin extends React.Component {
             })
         }
         else {
+            browserHistory.push('/graphs');
             //this.props.actions.loginUser();
         }
     }
