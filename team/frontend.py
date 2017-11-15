@@ -41,14 +41,17 @@ def index():
     """
     return html
     
-    # return 
-    #        """
-    #        To be redirected manually, click <a href="./human_combined">here</a>.' + \
-    #        <script>
-    #             window.location = "./human_combined"; 
-    #             window.location.replace("./human_combined");
-    #        </script>
-    #        """
+    # TODO: May need to switch to code below 
+    #    depending on how to deal w/ published data
+
+    # return \
+    # """
+    # To be redirected manually, click <a href="./human_combined">here</a>.' + \
+    # <script>
+    #      window.location = "./human_combined"; 
+    #      window.location.replace("./human_combined");
+    # </script>
+    # """
 
 @frontend.route('/<species>')
 def species(species):
