@@ -7,17 +7,16 @@
 
 <script>
 window.onload = function checkLogin() {
+	logout_html = '<div id="logout_div" style="padding: 20px; text-align: right">' +
+    			  '<a href="/logout">Logout</a> </div>';
+    login_html = '<div id="login_div" style="padding: 20px; text-align: right">' + 
+                 '<a href="/login">Login</a> </div>';
     {% if current_user.is_authenticated %}
     	// Show Login Button
-    	$('#login_logout_div').replaceWith('<div id="logout_div" style="padding: 20px; text-align: right"> <a href="/logout">Logout</a> </div>');
-		//var a = document.getElementById("logout_div");
-		//a.onclick = function() {
-			// Do logout procedures here
-		//	alert("I am an alert box!");
-		//}
+    	$('#login_logout_div').replaceWith(logout_html);
 	{% else %}
 		// Show Logout Button
-		$('#login_logout_div').replaceWith('<div id="login_div" style="padding: 20px; text-align: right"> <a href="/login">Login</a> </div>');
+		$('#login_logout_div').replaceWith(login_html);
 	{% endif %}
 }
 </script>
