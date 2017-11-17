@@ -52,22 +52,22 @@ root/
 1. Download all of the data. First go to the directory that you would like the data to be in. 
 ```
 mkdir scmdb_py_newdata
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/* scmdb_py_newdata
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/* scmdb_py_newdata
 mkdir scmdb_py
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py/data scmdb_py
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py/data/* scmdb_py
 ```
 2. Download subset of data. First go to the directory that you would like the data to be in.
 ```
 mkdir scmdb_py_newdata
-rsync <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/* scmdb_py_newdata
+rsync <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/* scmdb_py_newdata
 cd scmdb_py_newdata
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/human_MB_EB scmdb_py_newdata
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/human_MB_EB scmdb_py_newdata
 
 # Go back out to the root directory
 cd ../../..
 mkdir scmdb_py
-rsync <username>@brainome.ucsd.edu/srv/scmdb_py/data
-rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/data/mmu scmdb_py
+rsync <username>@brainome.ucsd.edu:/srv/scmdb_py/data
+rsync -r <username>@brainome.ucsd.edu:/srv/scmdb_py_newdata/data/mmu scmdb_py
 ```
 
 Using rsync command: rsync -r <username>@brainome.ucsd.edu/srv/scmdb_py_newdata/
@@ -86,12 +86,14 @@ pip install virtualenv
 cd Brainome/prod
 virtualenv venv
 source venv/bin/activate
+cd scmdb_py
 pip install -r requirements.txt
 deactivate
 
 cd ../../dev
 virtualenv venv
 source venv/bin/activate
+cd scmdb_py_dev
 pip install -r requirements.txt
 deactivate
 
@@ -103,8 +105,8 @@ deactivate
 ```
 3. Linking code to downloaded data.  You will need to modify 2 files: "prod/scmdb_py/default_config.py", and "dev/scmdb_py_dev/default_config.py"  For now, this will just point to the published data (the 
 ```
-DATA_DIR = 'Users/karanuppal/PycharmProjects/scmdb_py'
-# DATA_DIR = 'path/to/scmdb_py'
+DATA_DIR = 'path/to/scmdb_py'
+# e.g. DATA_DIR = 'Users/karanuppal/PycharmProjects/scmdb_py'
 ```
 
 5. Activate the Virtual environment.
@@ -115,7 +117,7 @@ source venv/bin/activate
 ```
 pip freeze
 ```
-7. Start the Application on port 5000.
+7. Start the Application on port 5000. (NOTE: the argument for --app is either a folder or a file, so make sure if you run --app=team that you are in the root directory)
 ```
 flask --app=team serve --port 5000
 ```

@@ -47,3 +47,5 @@ webassets==0.12.1
 Werkzeug==0.12.2
 WTForms==2.1
 cssmin==0.2.0
+Flask-Migrate==2.0.3
+Flask-Script==2.0.5
