@@ -12,7 +12,7 @@ let initialState = {
 
 
 let store = configureStore(initialState)
-console.log("updated")
+
 render(
     <Provider store={store}>
         <Ensemble />
