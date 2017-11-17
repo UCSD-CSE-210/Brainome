@@ -1,6 +1,6 @@
 import React from 'react'
 import { render } from 'react-dom'
-import TestContainer from '../containers/testContainer'
+import Ensemble from '../containers/ensembleTabularContainer'
 import configureStore from '../stores/store'
 import { Provider } from 'react-redux'
 
@@ -12,10 +12,10 @@ let initialState = {
 
 
 let store = configureStore(initialState)
-
+console.log("updated")
 render(
-  <Provider store={store}>
-    <TestContainer />
-  </Provider>,
-  document.getElementById('app') 
+    <Provider store={store}>
+        <Ensemble />
+    </Provider>,
+    document.getElementById('app') 
 )

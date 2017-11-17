@@ -162,6 +162,10 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     query = request.args.get('q', 'MustHaveAQueryString')
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
 
+@frontend.route('/tabular/ensemble')
+def tabular_screen():
+    return render_template('tabular_ensemble.html')
+
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
