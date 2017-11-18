@@ -192,6 +192,9 @@ def admin():
 @login_required
 @admin_required
 def registered_users():
+    """View all registered users."""
+    users = User.query.all()
+    roles = Role.query.all()
     return render_template(
         'admin/registered_users.html', users=users, roles=roles)
 
