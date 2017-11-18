@@ -19,7 +19,7 @@
 {#    It is using the Jinja2 templates shared in the slack channel#}
 {#    #}
     {% if current_user.is_authenticated %}
-      {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 'user')]) %}
+      {% set user = ([( 'frontend.index',  'Administrator Dashboard', 'user')]) %}
     {% endif %} 
     {{ render_menu_items( endpoints +  user ) }}
 {% endmacro %}
