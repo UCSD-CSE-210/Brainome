@@ -188,3 +188,10 @@ def admin():
     """Admin dashboard page."""
     return render_template('admin/index.html')
 
+@frontend.route('/users')
+@login_required
+@admin_required
+def registered_users():
+    return render_template(
+        'admin/registered_users.html', users=users, roles=roles)
+
