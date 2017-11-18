@@ -1,6 +1,3 @@
-{# This macro is called on the user dashboards. In this case the administrator dashboard
-   at the route admin.index
-#}
 
 {% macro render_menu_items(endpoints) %}
     {% for endpoint, name, icon in endpoints %}
@@ -13,58 +10,18 @@
     {% endfor %}
 {% endmacro %}
 
-{# This is called for all users (including anonymous users). It renders the basic left side of the 
-   navigation bar. In the default case, the left hand side will read 'Flask-Base'. In the logged in
-   admin case, there will also be an item that links to admin/ route. I have added an example use of
-   render_menu_items.
-#}
-
 {% macro header_items(current_user) %}
     {% set endpoints = [
-      ('main.index', config.APP_NAME, 'home'),
-      ('main.about', 'About', 'info')
+      ('frontend.index', 'Home', 'home')
     ]%}
     {% set user = [] %}
+    {#    This means that we are redirecting to the frontend.admin function if the current user is auhenticated.#}
+{#    It is using the Jinja2 templates shared in the slack channel#}
+{#    #}
     {% if current_user.is_authenticated %}
-      {% set user = ([(current_user.role.index + '.index', current_user.role.name + ' Dashboard', 'user')]) %}
+      {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 'user')]) %}
     {% endif %} 
     {{ render_menu_items( endpoints +  user ) }}
-{% endmacro %}
-
-{# This renders the right hand side of the navigation bar. If the user is logged in, it links to 
-   manage their account and logout (account routes). Otherwise, it links to register and login.
-#}
-{% macro account_items(current_user) %}
-    {% if current_user.is_authenticated %}
-      {% set endpoints = [
-        ('account.manage', 'Your Account', 'settings'),
-        ('account.logout', 'Log out', 'sign out')
-      ] %}
-      {{ render_menu_items(endpoints) }}
-    {% else %}
-      {% set endpoints = [
-        ('account.register', 'Register', 'list layout'),
-        ('account.login', 'Log In', 'sign in')
-      ] %}
-      {{ render_menu_items(endpoints) }}
-    {% endif %}
-{% endmacro %}
-
-{% macro mobile_nav(current_user, dropdown=None) %}
-    <div class="mobile only row">
-        <div class="ui fixed inverted black main menu">
-            {{ header_items(current_user) }}
-            <div class="right menu">
-                <a class="icon item" id="open-nav"><i class="sidebar icon"></i></a>
-            </div>
-        </div>
-
-        {# The menu items which will be shown when open-nav is clicked #}
-        <div class="ui fixed vertical fluid menu">
-          {{ account_items(current_user) }}
-          {{ create_dropdown(dropdown) }}
-        </div>
-    </div>
 {% endmacro %}
 
 {% macro create_dropdown(dropdown) %}
@@ -87,9 +44,6 @@
             <div class="ui container">
                 {{ header_items(current_user) }}
                 {{ create_dropdown(dropdown) }}
-                <div class="right menu">
-                    {{ account_items(current_user) }}
-                </div>
             </div>
         </div>
     </div>
@@ -97,7 +51,6 @@
 
 {% macro render_nav(current_user, dropdown=[]) %}
     <nav class="ui navigation grid {% if endpoints %}has-submenu{% endif %}">
-        {{ mobile_nav(current_user, dropdown=dropdown) }}
         {{ desktop_nav(current_user, dropdown=dropdown) }}
     </nav>
 {% endmacro %}
