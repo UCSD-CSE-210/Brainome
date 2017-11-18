@@ -183,6 +183,7 @@ def login():
 
 @frontend.route('/admin')
 @login_required
+@admin_required
 def admin():
     """Admin dashboard page."""
     return render_template('admin/index.html')
