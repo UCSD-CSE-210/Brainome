@@ -2,7 +2,7 @@
 
 For actual content generation see the content.py module.
 """
-from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash
+from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash, abort
 from flask_nav.elements import Navbar, Link, View
 from flask_login import (current_user, login_required, login_user,
                          logout_user)
@@ -14,7 +14,8 @@ from . import nav
 from . import cache
 from os import walk
 from .forms import LoginForm
-from .user import User
+from .user import User, Role
+from .decorators import admin_required
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
@@ -178,3 +179,11 @@ def login():
         else:
             flash('Invalid email or password.', 'form-error')
     return render_template('account/login.html', form=form)
+
+
+@frontend.route('/admin')
+@login_required
+def admin():
+    """Admin dashboard page."""
+    return render_template('admin/index.html')
+
