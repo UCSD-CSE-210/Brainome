@@ -2,11 +2,11 @@ var webpack = require('webpack');
 module.exports = {  
   devtool: 'inline-source-map',
   entry: [
-    "./js/client/app.js"
+    "./js/containers/ensembleTabularContainer.js"
   ],
   output: {
     path: __dirname + '/static',
-    filename: "bundle.js"
+    filename: "tabular_ensemble.js"
   },
    module: {
     loaders: [
