@@ -198,3 +198,11 @@ def registered_users():
     return render_template(
         'admin/registered_users.html', users=users, roles=roles)
 
+@admin.route('/new-user', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_user():
+    """Create a new user."""
+    return render_template('admin/new_user.html', form=form)
+
+
