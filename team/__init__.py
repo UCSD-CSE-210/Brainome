@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_mail import Mail
 from flask_appconfig import AppConfig
 from flask_bootstrap import Bootstrap
 from flask_cache import Cache
@@ -14,6 +15,7 @@ from .assets import app_css, app_js, vendor_css, vendor_js
 
 cache = Cache()
 nav = Nav()
+mail = Mail()
 db = SQLAlchemy()
 compress = Compress()
 htmlmin = HTMLMIN()
@@ -58,6 +60,7 @@ def create_app(configfile=None):
     app.json_encoder = MiniJSONEncoder
 
     nav.init_app(app)
+    mail.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
     compress.init_app(app)
