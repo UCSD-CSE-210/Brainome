@@ -34,6 +34,11 @@ class MiniJSONEncoder(JSONEncoder):
 def create_app(configfile=None):
     app = Flask(__name__)
     app.secret_key = 's3cr3t'
+    app.mail_server = 'smtp.sendgrid.net'
+    app.mail_port = 587
+    app.mail_use_tls = True
+    app.mail_username = 'apikey'
+    app.mail_password = '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'
     AppConfig(app)
     Bootstrap(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'user-login.sqlite')
