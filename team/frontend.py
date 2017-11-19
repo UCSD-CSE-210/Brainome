@@ -11,9 +11,9 @@ from .content import get_cluster_plot, search_gene_names, \
     find_orthologs, FailToGraphException, get_corr_genes, \
     gene_id_to_name, randomize_cluster_colors, get_mch_heatmap
 from . import nav
-from . import cache
+from . import cache, db
 from os import walk
-from .forms import LoginForm
+from .forms import LoginForm, ChangeUserEmailForm
 from .user import User, Role
 from .decorators import admin_required
 
@@ -215,5 +215,23 @@ def user_info(user_id):
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
+
+
+@frontend.route('/user/<int:user_id>/change-email', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def change_user_email(user_id):
+    """Change a user's email."""
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        abort(404)
+    form = ChangeUserEmailForm()
+    if form.validate_on_submit():
+        user.email = form.email.data
+        db.session.add(user)
+        db.session.commit()
+        flash('Email for user {} successfully changed to {}.'
+              .format(user.full_name(), user.email), 'form-success')
+    return render_template('admin/manage_user.html', user=user, form=form)
 
 
