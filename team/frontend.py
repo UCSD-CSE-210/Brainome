@@ -13,7 +13,7 @@ from .content import get_cluster_plot, search_gene_names, \
 from . import nav
 from . import cache, db
 from os import walk
-from .forms import LoginForm, ChangeUserEmailForm
+from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm
 from .user import User, Role
 from .decorators import admin_required
 
@@ -243,5 +243,21 @@ def delete_user_request(user_id):
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
+
+
+@admin.route('/user/<int:user_id>/change-account-type', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def change_account_type(user_id):
+    """Change a user's account type."""
+    if current_user.id == user_id:
+        flash('You cannot change the type of your own account. Please ask '
+              'another administrator to do this.', 'error')
+        return redirect(url_for('admin.user_info', user_id=user_id))
+
+    user = User.query.get(user_id)
+    if user is None:
+        abort(404)
+    return render_template('admin/manage_user.html', user=user, form=form)
 
 
