@@ -3,6 +3,8 @@ from wtforms import ValidationError
 from wtforms.fields import (BooleanField, PasswordField, StringField,
                             SubmitField)
 from wtforms.fields.html5 import EmailField
+from . import db
+from wtforms.ext.sqlalchemy.fields import QuerySelectField
 from wtforms.validators import Email, EqualTo, InputRequired, Length
 from .user import Role, User
 
@@ -21,3 +23,11 @@ class ChangeUserEmailForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+class ChangeAccountTypeForm(Form):
+    role = QuerySelectField(
+        'New account type',
+        validators=[InputRequired()],
+        get_label='name',
+        query_factory=lambda: db.session.query(Role).order_by('permissions'))
+    submit = SubmitField('Update role')
