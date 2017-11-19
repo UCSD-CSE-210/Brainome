@@ -234,4 +234,14 @@ def change_user_email(user_id):
               .format(user.full_name(), user.email), 'form-success')
     return render_template('admin/manage_user.html', user=user, form=form)
 
+@frontend.route('/user/<int:user_id>/delete')
+@login_required
+@admin_required
+def delete_user_request(user_id):
+    """Request deletion of a user's account."""
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        abort(404)
+    return render_template('admin/manage_user.html', user=user)
+
 
