@@ -258,6 +258,13 @@ def change_account_type(user_id):
     user = User.query.get(user_id)
     if user is None:
         abort(404)
+    form = ChangeAccountTypeForm()
+    if form.validate_on_submit():
+        user.role = form.role.data
+        db.session.add(user)
+        db.session.commit()
+        flash('Role for user {} successfully changed to {}.'
+              .format(user.full_name(), user.role.name), 'form-success')
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
