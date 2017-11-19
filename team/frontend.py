@@ -205,4 +205,15 @@ def new_user():
     """Create a new user."""
     return render_template('admin/new_user.html')
 
+@frontend.route('/user/<int:user_id>')
+@frontend.route('/user/<int:user_id>/info')
+@login_required
+@admin_required
+def user_info(user_id):
+    """View a user's profile."""
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        abort(404)
+    return render_template('admin/manage_user.html', user=user)
+
 
