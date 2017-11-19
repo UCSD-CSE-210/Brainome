@@ -245,7 +245,7 @@ def delete_user_request(user_id):
     return render_template('admin/manage_user.html', user=user)
 
 
-@admin.route('/user/<int:user_id>/change-account-type', methods=['GET', 'POST'])
+@frontend.route('/user/<int:user_id>/change-account-type', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def change_account_type(user_id):
