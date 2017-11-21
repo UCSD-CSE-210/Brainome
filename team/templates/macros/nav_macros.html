@@ -19,9 +19,23 @@
 {#    It is using the Jinja2 templates shared in the slack channel#}
 {#    #}
     {% if current_user.is_authenticated %}
-      {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 'user')]) %}
-    {% endif %} 
+      {% set user = ([( 'frontend.',  'Administrator Dashboard', 'user')]) %}
+    {% endif %}
     {{ render_menu_items( endpoints +  user ) }}
+{% endmacro %}
+
+{# This renders the right hand side of the navigation bar. If the user is logged in, it links to
+   manage their account and logout (account routes). Otherwise, it links to register and login.
+#}
+{% macro account_items(current_user) %}
+    {% if current_user.is_authenticated %}
+      {% set endpoints = [
+        ('frontend.manage', 'Your Account', 'settings'),
+        ('frontend.logout', 'Log out', 'sign out')
+      ] %}
+      {{ render_menu_items(endpoints) }}
+    {% else %}
+    {% endif %}
 {% endmacro %}
 
 {% macro create_dropdown(dropdown) %}
@@ -44,6 +58,9 @@
             <div class="ui container">
                 {{ header_items(current_user) }}
                 {{ create_dropdown(dropdown) }}
+            </div>
+            <div class="right menu">
+                    {{ account_items(current_user) }}
             </div>
         </div>
     </div>

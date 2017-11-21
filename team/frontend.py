@@ -14,7 +14,7 @@ from . import nav
 from . import cache, db, mail
 from .email import send_email
 from os import walk
-from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm, CreatePasswordForm
+from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm, CreatePasswordForm, NewUserForm
 from .user import User, Role
 from .decorators import admin_required
 from flask_rq import get_queue
@@ -201,13 +201,6 @@ def registered_users():
     return render_template(
         'admin/registered_users.html', users=users, roles=roles)
 
-@frontend.route('/new-user', methods=['GET', 'POST'])
-@login_required
-@admin_required
-def new_user():
-    """Create a new user."""
-    return render_template('admin/new_user.html')
-
 @frontend.route('/user/<int:user_id>')
 @frontend.route('/user/<int:user_id>/info')
 @login_required
@@ -246,6 +239,21 @@ def delete_user_request(user_id):
     if user is None:
         abort(404)
     return render_template('admin/manage_user.html', user=user)
+
+@frontend.route('/user/<int:user_id>/_delete')
+@login_required
+@admin_required
+def delete_user(user_id):
+    """Delete a user's account."""
+    if current_user.id == user_id:
+        flash('You cannot delete your own account. Please ask another '
+              'administrator to do this.', 'error')
+    else:
+        user = User.query.filter_by(id=user_id).first()
+        db.session.delete(user)
+        db.session.commit()
+        flash('Successfully deleted user %s.' % user.full_name(), 'success')
+    return redirect(url_for('frontend.registered_users'))
 
 
 @frontend.route('/user/<int:user_id>/change-account-type', methods=['GET', 'POST'])
@@ -339,5 +347,25 @@ def join_from_invite(user_id, token):
         send_email(recipient=new_user.email, subject='You Are Invited To Join', template='email/invite', user=new_user,
                    invite_link=invite_link)
     return redirect(url_for('frontend.index'))
+
+@frontend.route('/new-user', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def new_user():
+    """Create a new user."""
+    form = NewUserForm()
+    if form.validate_on_submit():
+        user = User(
+            role=form.role.data,
+            first_name=form.first_name.data,
+            last_name=form.last_name.data,
+            email=form.email.data,
+            password=form.password.data)
+        db.session.add(user)
+        db.session.commit()
+        flash('User {} successfully created'.format(user.full_name()),
+              'form-success')
+    return render_template('admin/new_user.html', form=form)
+
 
 

@@ -54,3 +54,13 @@ class CreatePasswordForm(Form):
     password = PasswordField('Password',validators=[InputRequired(), EqualTo('password2', 'Passwords must match.')])
     password2 = PasswordField('Confirm new password', validators=[InputRequired()])
     submit = SubmitField('Set password')
+
+class NewUserForm(InviteUserForm):
+    password = PasswordField(
+        'Password',
+        validators=[
+            InputRequired(), EqualTo('password2', 'Passwords must match.')
+        ])
+    password2 = PasswordField('Confirm password', validators=[InputRequired()])
+
+    submit = SubmitField('Create')
