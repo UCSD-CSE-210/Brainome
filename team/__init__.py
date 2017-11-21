@@ -14,11 +14,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_rq import RQ
 from .assets import app_css, app_js, vendor_css, vendor_js
 import urllib.parse
+from flask_wtf import CsrfProtect
 
 cache = Cache()
 nav = Nav()
 mail = Mail()
 db = SQLAlchemy()
+csrf = CsrfProtect()
 compress = Compress()
 htmlmin = HTMLMIN()
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -78,6 +80,7 @@ def create_app(configfile=None):
 
     nav.init_app(app)
     mail.init_app(app)
+    csrf.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
     compress.init_app(app)

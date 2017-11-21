@@ -51,11 +51,6 @@ class InviteUserForm(Form):
             raise ValidationError('Email already registered.')
 
 class CreatePasswordForm(Form):
-    password = PasswordField(
-        'Password',
-        validators=[
-            InputRequired(), EqualTo('password2', 'Passwords must match.')
-        ])
-    password2 = PasswordField(
-        'Confirm new password', validators=[InputRequired()])
+    password = PasswordField('Password',validators=[InputRequired(), EqualTo('password2', 'Passwords must match.')])
+    password2 = PasswordField('Confirm new password', validators=[InputRequired()])
     submit = SubmitField('Set password')

@@ -321,7 +321,7 @@ def join_from_invite(user_id, token):
 
     if new_user.password_hash is not None:
         flash('You have already joined.', 'error')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('frontend.index'))
 
     if new_user.confirm_account(token):
         form = CreatePasswordForm()
@@ -343,14 +343,9 @@ def join_from_invite(user_id, token):
             user_id=user_id,
             token=token,
             _external=True)
-        get_queue().enqueue(
-            send_email,
-            recipient=new_user.email,
-            subject='You Are Invited To Join',
-            template='account/email/invite',
-            user=new_user,
-            invite_link=invite_link)
-    return redirect(url_for('main.index'))
+        send_email(recipient=new_user.email, subject='You Are Invited To Join', template='email/invite', user=new_user,
+                   invite_link=invite_link)
+    return redirect(url_for('frontend.index'))
 
 @frontend.route("/mail")
 def send_mail():

@@ -17,5 +17,12 @@
         {% block content %}
         {% endblock %}
 
+        {# Implement CSRF protection for site #}
+        {% if csrf_token()|safe %}
+            <div style="visibility: hidden; display: none">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token()|safe }}">
+            </div>
+        {% endif %}
+
     </body>
 </html>
