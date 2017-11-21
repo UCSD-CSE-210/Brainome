@@ -8,7 +8,7 @@ from . import mail
 def send_email(recipient, subject, template, **kwargs):
         msg = Message(
             'Email' + ' ' + subject,
-            sender='k1uppal@eng.ucsd.edu',
+            sender='kuppal2790@gmail.com',
             recipients=[recipient])
         msg.body = render_template(template + '.txt', **kwargs)
         msg.html = render_template(template + '.html', **kwargs)

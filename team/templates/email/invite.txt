@@ -1,6 +1,6 @@
 Dear {{ user.full_name() }},
 
-You are invited to join {{ config.APP_NAME }}!
+You are invited to join {{ Brainome }}!
 
 To set your password, please click on the following link:
 
@@ -10,7 +10,7 @@ Once completed, please log in as {{ user.email }} with the password you set.
 
 Sincerely,
 
-The {{ config.APP_NAME }} Team
+The {{ Brainome }} Team
 
 Note: replies to this email address are not monitored.
 

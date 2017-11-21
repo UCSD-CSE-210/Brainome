@@ -2,7 +2,7 @@
 
 For actual content generation see the content.py module.
 """
-from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash, abort
+from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash, abort, url_for
 from flask_nav.elements import Navbar, Link, View
 from flask_login import (current_user, login_required, login_user,
                          logout_user)
@@ -11,13 +11,14 @@ from .content import get_cluster_plot, search_gene_names, \
     find_orthologs, FailToGraphException, get_corr_genes, \
     gene_id_to_name, randomize_cluster_colors, get_mch_heatmap
 from . import nav
-from . import cache, db
+from . import cache, db, mail
 from .email import send_email
 from os import walk
 from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm
 from .user import User, Role
 from .decorators import admin_required
 from flask_rq import get_queue
+from flask_mail import Mail, Message
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
@@ -270,7 +271,7 @@ def change_account_type(user_id):
     return render_template('admin/manage_user.html', user=user, form=form)
 
 
-@admin.route('/invite-user', methods=['GET', 'POST'])
+@frontend.route('/invite-user', methods=['GET', 'POST'])
 @login_required
 @admin_required
 def invite_user():
@@ -286,19 +287,76 @@ def invite_user():
         db.session.commit()
         token = user.generate_confirmation_token()
         invite_link = url_for(
-            'account.join_from_invite',
+            'frontend.join_from_invite',
             user_id=user.id,
+            token=token,
+            _external=True)
+        # get_queue().enqueue(
+        #     send_email,
+        #     recipient=user.email,
+        #     subject='You Are Invited To Join',
+        #     template='email/invite',
+        #     user=user,
+        #     invite_link=invite_link, )
+        send_email(recipient=user.email,subject='You Are Invited To Join',template='email/invite',user=user,invite_link=invite_link)
+        flash('User {} successfully invited'.format(user.full_name()),
+              'form-success')
+    return render_template('admin/new_user.html', form=form)
+
+
+@frontend.route(
+    '/join-from-invite/<int:user_id>/<token>', methods=['GET', 'POST'])
+def join_from_invite(user_id, token):
+    """
+    Confirm new user's account with provided token and prompt them to set
+    a password.
+    """
+    if current_user is not None and current_user.is_authenticated:
+        flash('You are already logged in.', 'error')
+        return redirect(url_for('frontend.index'))
+
+    new_user = User.query.get(user_id)
+    if new_user is None:
+        return redirect(404)
+
+    if new_user.password_hash is not None:
+        flash('You have already joined.', 'error')
+        return redirect(url_for('main.index'))
+
+    if new_user.confirm_account(token):
+        form = CreatePasswordForm()
+        if form.validate_on_submit():
+            new_user.password = form.password.data
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Your password has been set. After you log in, you can '
+                  'go to the "Your Account" page to review your account '
+                  'information and settings.', 'success')
+            return redirect(url_for('account.login'))
+        return render_template('account/join_invite.html', form=form)
+    else:
+        flash('The confirmation link is invalid or has expired. Another '
+              'invite email with a new link has been sent to you.', 'error')
+        token = new_user.generate_confirmation_token()
+        invite_link = url_for(
+            'account.join_from_invite',
+            user_id=user_id,
             token=token,
             _external=True)
         get_queue().enqueue(
             send_email,
-            recipient=user.email,
+            recipient=new_user.email,
             subject='You Are Invited To Join',
             template='account/email/invite',
-            user=user,
-            invite_link=invite_link, )
-        flash('User {} successfully invited'.format(user.full_name()),
-              'form-success')
-    return render_template('admin/new_user.html', form=form)
+            user=new_user,
+            invite_link=invite_link)
+    return redirect(url_for('main.index'))
+
+@frontend.route("/mail")
+def send_mail():
+   msg = Message('Hello', sender = 'yourId@gmail.com', recipients = ['kuppal2790@gmail.com'])
+   msg.body = "Hello Flask message sent from Flask-Mail"
+   mail.send(msg)
+   return "Sent"
 
 

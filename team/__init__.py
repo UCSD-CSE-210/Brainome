@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, current_app
 from flask_mail import Mail
 from flask_appconfig import AppConfig
 from flask_bootstrap import Bootstrap
@@ -11,7 +11,9 @@ from flask.ext.htmlmin import HTMLMIN
 from flask.json import JSONEncoder
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
+from flask_rq import RQ
 from .assets import app_css, app_js, vendor_css, vendor_js
+import urllib.parse
 
 cache = Cache()
 nav = Nav()
@@ -34,15 +36,25 @@ class MiniJSONEncoder(JSONEncoder):
 def create_app(configfile=None):
     app = Flask(__name__)
     app.secret_key = 's3cr3t'
-    app.mail_server = 'smtp.sendgrid.net'
-    app.mail_port = 587
-    app.mail_use_tls = True
-    app.mail_username = 'apikey'
-    app.mail_password = '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'
     AppConfig(app)
     Bootstrap(app)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'user-login.sqlite')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    REDIS_URL = 'http://localhost:6379'
+    urllib.parse.uses_netloc.append('redis')
+    url = urllib.parse.urlparse(REDIS_URL)
+    app.config['RQ_DEFAULT_HOST'] = url.hostname
+    app.config['RQ_DEFAULT_PORT'] = url.port
+    app.config['RQ_DEFAULT_PASSWORD'] = url.password
+    app.config['RQ_DEFAULT_DB'] = 0
+
+    app.config['MAIL_SERVER'] = 'smtp.sendgrid.net'
+    app.config['MAIL_PORT'] = 465
+    app.config['MAIL_USE_TLS'] = False
+    app.config['MAIL_USE_SSL'] = True
+    app.config['MAIL_DEBUG'] = True
+    app.config['MAIL_USERNAME'] = 'apikey'
+    app.config['MAIL_PASSWORD'] = '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'
     # EAM : Set limit on the number of items in cache (RAM)
     cache.init_app(app, config={'CACHE_TYPE': 'simple', 'CACHE_THRESHOLD': 1000})
 
@@ -70,6 +82,7 @@ def create_app(configfile=None):
     login_manager.init_app(app)
     compress.init_app(app)
     htmlmin.init_app(app)
+    RQ(app)
 
     return app
 
