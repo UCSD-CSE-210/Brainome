@@ -264,7 +264,7 @@ def change_account_type(user_id):
     if current_user.id == user_id:
         flash('You cannot change the type of your own account. Please ask '
               'another administrator to do this.', 'error')
-        return redirect(url_for('admin.user_info', user_id=user_id))
+        return redirect(url_for('frontend.user_info', user_id=user_id))
 
     user = User.query.get(user_id)
     if user is None:
