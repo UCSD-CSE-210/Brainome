@@ -64,3 +64,39 @@ class NewUserForm(InviteUserForm):
     password2 = PasswordField('Confirm password', validators=[InputRequired()])
 
     submit = SubmitField('Create')
+
+class RequestResetPasswordForm(Form):
+    email = EmailField(
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
+    submit = SubmitField('Reset password')
+
+    # We don't validate the email address so we don't confirm to attackers
+    # that an account with the given email exists.
+
+class ResetPasswordForm(Form):
+    email = EmailField(
+        'Email', validators=[InputRequired(), Length(1, 64), Email()])
+    new_password = PasswordField(
+        'New password',
+        validators=[
+            InputRequired(), EqualTo('new_password2', 'Passwords must match.')
+        ])
+    new_password2 = PasswordField(
+        'Confirm new password', validators=[InputRequired()])
+    submit = SubmitField('Reset password')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first() is None:
+            raise ValidationError('Unknown email address.')
+
+
+class ChangePasswordForm(Form):
+    old_password = PasswordField('Old password', validators=[InputRequired()])
+    new_password = PasswordField(
+        'New password',
+        validators=[
+            InputRequired(), EqualTo('new_password2', 'Passwords must match.')
+        ])
+    new_password2 = PasswordField(
+        'Confirm new password', validators=[InputRequired()])
+    submit = SubmitField('Update password')
