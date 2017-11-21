@@ -291,13 +291,6 @@ def invite_user():
             user_id=user.id,
             token=token,
             _external=True)
-        # get_queue().enqueue(
-        #     send_email,
-        #     recipient=user.email,
-        #     subject='You Are Invited To Join',
-        #     template='email/invite',
-        #     user=user,
-        #     invite_link=invite_link, )
         send_email(recipient=user.email,subject='You Are Invited To Join',template='email/invite',user=user,invite_link=invite_link)
         flash('User {} successfully invited'.format(user.full_name()),
               'form-success')
@@ -346,12 +339,5 @@ def join_from_invite(user_id, token):
         send_email(recipient=new_user.email, subject='You Are Invited To Join', template='email/invite', user=new_user,
                    invite_link=invite_link)
     return redirect(url_for('frontend.index'))
-
-@frontend.route("/mail")
-def send_mail():
-   msg = Message('Hello', sender = 'yourId@gmail.com', recipients = ['kuppal2790@gmail.com'])
-   msg.body = "Hello Flask message sent from Flask-Mail"
-   mail.send(msg)
-   return "Sent"
 
 
