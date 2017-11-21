@@ -14,7 +14,7 @@ from . import nav
 from . import cache, db, mail
 from .email import send_email
 from os import walk
-from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm, CreatePasswordForm, NewUserForm
+from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm, CreatePasswordForm, NewUserForm, RequestResetPasswordForm, ResetPasswordForm, ChangePasswordForm
 from .user import User, Role
 from .decorators import admin_required
 from flask_rq import get_queue
@@ -366,6 +366,83 @@ def new_user():
         flash('User {} successfully created'.format(user.full_name()),
               'form-success')
     return render_template('admin/new_user.html', form=form)
+
+@frontend.route('/manage', methods=['GET', 'POST'])
+@frontend.route('/manage/info', methods=['GET', 'POST'])
+@login_required
+def manage():
+    """Display a user's account information."""
+    return render_template('account/manage.html', user=current_user, form=None)
+
+
+@frontend.route('/reset-password', methods=['GET', 'POST'])
+def reset_password_request():
+    """Respond to existing user's request to reset their password."""
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = RequestResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            token = user.generate_password_reset_token()
+            reset_link = url_for(
+                'account.reset_password', token=token, _external=True)
+            get_queue().enqueue(
+                send_email,
+                recipient=user.email,
+                subject='Reset Your Password',
+                template='account/email/reset_password',
+                user=user,
+                reset_link=reset_link,
+                next=request.args.get('next'))
+        flash('A password reset link has been sent to {}.'
+              .format(form.email.data), 'warning')
+        return redirect(url_for('account.login'))
+    return render_template('account/reset_password.html', form=form)
+
+@frontend.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    """Reset an existing user's password."""
+    if not current_user.is_anonymous:
+        return redirect(url_for('main.index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user is None:
+            flash('Invalid email address.', 'form-error')
+            return redirect(url_for('main.index'))
+        if user.reset_password(token, form.new_password.data):
+            flash('Your password has been updated.', 'form-success')
+            return redirect(url_for('account.login'))
+        else:
+            flash('The password reset link is invalid or has expired.',
+                  'form-error')
+            return redirect(url_for('main.index'))
+    return render_template('account/reset_password.html', form=form)
+
+@frontend.route('/manage/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    """Change an existing user's password."""
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.new_password.data
+            db.session.add(current_user)
+            db.session.commit()
+            flash('Your password has been updated.', 'form-success')
+            return redirect(url_for('frontend.index'))
+        else:
+            flash('Original password is invalid.', 'form-error')
+    return render_template('account/manage.html', form=form)
+
+
+@frontend.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('frontend.index'))
 
 
 
