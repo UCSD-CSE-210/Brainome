@@ -49,3 +49,13 @@ class InviteUserForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first():
             raise ValidationError('Email already registered.')
+
+class CreatePasswordForm(Form):
+    password = PasswordField(
+        'Password',
+        validators=[
+            InputRequired(), EqualTo('password2', 'Passwords must match.')
+        ])
+    password2 = PasswordField(
+        'Confirm new password', validators=[InputRequired()])
+    submit = SubmitField('Set password')
