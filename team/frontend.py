@@ -14,7 +14,7 @@ from . import nav
 from . import cache, db, mail
 from .email import send_email
 from os import walk
-from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm
+from .forms import LoginForm, ChangeUserEmailForm, ChangeAccountTypeForm, InviteUserForm, CreatePasswordForm
 from .user import User, Role
 from .decorators import admin_required
 from flask_rq import get_queue
@@ -332,7 +332,7 @@ def join_from_invite(user_id, token):
             flash('Your password has been set. After you log in, you can '
                   'go to the "Your Account" page to review your account '
                   'information and settings.', 'success')
-            return redirect(url_for('account.login'))
+            return redirect(url_for('frontend.login'))
         return render_template('account/join_invite.html', form=form)
     else:
         flash('The confirmation link is invalid or has expired. Another '

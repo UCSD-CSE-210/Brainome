@@ -18,7 +18,7 @@
     } %}
 
     {{ begin_form(form, flashes, method=method, extra_classes=extra_classes, enctype=enctype) }}
-        {% for field in form if not (is_hidden_field(field) or field.type == 'SubmitField') %}
+        {% for field in form if not ((field.widget.input_type != 'hidden') or field.type == 'SubmitField') %}
             {{ render_form_field(field) }}
         {% endfor %}
 
