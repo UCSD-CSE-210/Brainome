@@ -27,6 +27,24 @@ class FailToGraphException(Exception):
     pass
 
 
+
+def get_ensemble_list():
+
+    ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
+
+    json_ens = "{\"ensembles\":["
+
+    for i, ens in enumerate(ensemble_list):
+
+        json_ens += "\"" + ens + "\""
+
+        if i > 0:
+            json_ens += ","
+
+    json_ens += "]}"
+
+    return json_ens
+
 # Utilities
 def species_exists(species):
     """Check if data for a given species exists by looking for its data directory.
@@ -1358,3 +1376,5 @@ def randomize_cluster_colors():
     except NameError:
         time.sleep(5)
         randomize_cluster_colors()
+
+
