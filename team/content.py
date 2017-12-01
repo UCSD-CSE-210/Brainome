@@ -1389,8 +1389,8 @@ def randomize_cluster_colors():
 
 
 
-@content.route('/content/metadata')
-def get_metadata(ensemble = ""):
+@content.route('/content/metadata/<ensemble>')
+def get_metadata(ensemble):
 
     is_privileged = 0
     postfix = "metadata_example.csv"
