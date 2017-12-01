@@ -2,24 +2,16 @@
 {% block title %}Single Cell Methylome{% endblock %}
 {% import "bootstrap/fixes.html" as fixes %}
 {% block head %}
-<!-- Placeholder for login or logout -->
-<div id="login_logout_div"> </div>
 
-<script>
-window.onload = function checkLogin() {
-    logout_html = '<div id="logout_div" style="padding: 20px; text-align: right">' +
-                  '<a href="/logout">Logout</a> </div>';
-    login_html = '<div id="login_div" style="padding: 20px; text-align: right">' + 
-                 '<a href="/login">Login</a> </div>';
-    {% if current_user.is_authenticated %}
-    	// Show Login Button
-    	$('#login_logout_div').replaceWith(logout_html);
-	{% else %}
-		// Show Logout Button
-		$('#login_logout_div').replaceWith(login_html);
-	{% endif %}
-}
-</script>
+{% if current_user.is_authenticated %}
+    <div id="logout_div" style="padding: 20px; text-align: right">
+    <a href="/logout">Logout</a>
+    </div>
+{% else %}
+	<div id="login_div" style="padding: 20px; text-align: right">
+	<a href="/login">Login</a>
+	</div>
+{% endif %}
 
     {{super()}}
     {{fixes.ie8()}}

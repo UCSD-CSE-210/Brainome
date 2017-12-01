@@ -174,7 +174,6 @@ def login():
         if user is not None and user.password_hash is not None and \
                 user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            flash('You are now logged in. Welcome back!', 'form-error')
             return redirect('/')
         else:
             flash('Invalid email or password.', 'form-error')
