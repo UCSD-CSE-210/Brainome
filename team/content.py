@@ -9,6 +9,7 @@ import time
 
 import pandas
 import pandas as pd
+import json
 import plotly
 from random import sample
 import colorlover as cl
@@ -42,16 +43,7 @@ def get_ensemble_list():
     else:
         ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
 
-    json_ens = "{\"ensembles\":["
-
-    for i, ens in enumerate(ensemble_list):
-
-        json_ens += "\"" + ens + "\""
-
-        if i > 0:
-            json_ens += ","
-
-    json_ens += "]}"
+    json_ens = json.dumps({"ensembles":ensemble_list})
 
     return json_ens
 
