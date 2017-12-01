@@ -55,6 +55,9 @@ def create_app(configfile=None):
         from .frontend import frontend
         app.register_blueprint(frontend)
 
+        from .content import content
+        app.register_blueprint(content)
+
     app.json_encoder = MiniJSONEncoder
 
     nav.init_app(app)
