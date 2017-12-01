@@ -26,7 +26,7 @@ frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
 dir_list_links=[Link(x, x) for x in dir_list]
-
+dir_list_links.append(Link('Ensembles', 'tabular/ensemble'))
 
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))
@@ -178,12 +178,18 @@ def login():
         if user is not None and user.password_hash is not None and \
                 user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            flash('You are now logged in. Welcome back!', 'form-error')
+            return redirect('/')
         else:
             flash('Invalid email or password.', 'form-error')
     return render_template('account/login.html', form=form)
 
-
+@frontend.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('frontend.index'))
+  
 @frontend.route('/admin')
 @login_required
 @admin_required
@@ -435,14 +441,3 @@ def change_password():
         else:
             flash('Original password is invalid.', 'form-error')
     return render_template('account/manage.html', form=form)
-
-
-@frontend.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    flash('You have been logged out.', 'info')
-    return redirect(url_for('frontend.index'))
-
-
-
