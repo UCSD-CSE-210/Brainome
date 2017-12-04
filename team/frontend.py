@@ -22,7 +22,7 @@ frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
 dir_list_links=[Link(x, x) for x in dir_list]
-
+dir_list_links.append(Link('Ensembles', 'tabular/ensemble'))
 
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))
@@ -162,6 +162,10 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     query = request.args.get('q', 'MustHaveAQueryString')
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
 
+@frontend.route('/tabular/ensemble')
+def tabular_screen():
+    return render_template('tabular_ensemble.html')
+
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -170,7 +174,14 @@ def login():
         if user is not None and user.password_hash is not None and \
                 user.verify_password(form.password.data):
             login_user(user, form.remember_me.data)
-            flash('You are now logged in. Welcome back!', 'form-error')
+            return redirect('/')
         else:
             flash('Invalid email or password.', 'form-error')
     return render_template('account/login.html', form=form)
+
+# somewhere to logout
+@frontend.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect('/')
