@@ -8,6 +8,8 @@ from collections import OrderedDict
 import time
 
 import pandas
+import pandas as pd
+import json
 import plotly
 from random import sample
 import colorlover as cl
@@ -17,11 +19,13 @@ from flask import current_app
 from numpy import arange, random
 from plotly.graph_objs import Layout, Box, Scatter, Scattergl, Scatter3d, Heatmap
 
+from flask import Blueprint
+content = Blueprint('content', __name__) # Flask "bootstrap"
+
 
 from . import cache
 # from .cluster_color_scale import CLUSTER_COLORS
 import sqlite3
-import pandas as pd
 from sqlite3 import Error
 
 class FailToGraphException(Exception):
@@ -29,21 +33,17 @@ class FailToGraphException(Exception):
     pass
 
 
-
+@content.route('/content/ensemble_list')
 def get_ensemble_list():
 
-    ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
+    is_privileged = 0
 
-    json_ens = "{\"ensembles\":["
+    if is_privileged:
+        ensemble_list = next(os.walk(current_app.config['ALL_DATA_DIR']))[1]
+    else:
+        ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
 
-    for i, ens in enumerate(ensemble_list):
-
-        json_ens += "\"" + ens + "\""
-
-        if i > 0:
-            json_ens += ","
-
-    json_ens += "]}"
+    json_ens = json.dumps({"ensembles":ensemble_list})
 
     return json_ens
 
@@ -1381,7 +1381,11 @@ def randomize_cluster_colors():
 
 
 
-def get_metadata(ensemble = "", postfix = "metadata_example.csv"):
+@content.route('/content/metadata/<ensemble>')
+def get_metadata(ensemble):
+
+    is_privileged = 0
+    postfix = "metadata_example.csv"
 
     # datasets = ensemble.split("_")
     # if len(datasets) > 1:
@@ -1401,7 +1405,13 @@ def get_metadata(ensemble = "", postfix = "metadata_example.csv"):
     # rows = cur.fetchall()
     df = pd.DataFrame()
 
-    meta_path = "{}/{}/{}".format(current_app.config['DATA_DIR'], ensemble, postfix)
+    if is_privileged:
+
+        meta_path = "{}/{}/{}".format(current_app.config['DATA_DIR'], ensemble, postfix)
+
+    else:
+
+        meta_path = "{}/{}/{}".format(current_app.config['ALL_DATA_DIR'], ensemble, postfix)
 
     # for r in rows:
     #     if privilege or (r[1] == 1):
