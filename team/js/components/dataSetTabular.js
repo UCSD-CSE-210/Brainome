@@ -6,12 +6,12 @@ class MyTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.rows = [{"id":1,"ensemble":"ensemble1","property1":["data1", "data2"]},
-            {"id":2,"ensemble":"ensemble2","property1":["data3", "data4"]},
-            {"id":3,"ensemble":"ensemble3","property1":["data2", "data5"]}];
+        this.rows = [{"dataSet":"DS1","ensemble":"ensemble1","property1":["data1", "data2"]},
+            {"dataSet":"DS2","ensemble":"ensemble2","property1":["data3", "data4"]},
+            {"dataSet":"DS3","ensemble":"ensemble3","property1":["data2", "data5"]}];
         this.state = {
             filteredDataList : this.rows,
-            sortBy: 'id',
+            sortBy: 'dataSet',
             sortDir: 'ASC'
         };
     }
@@ -28,7 +28,7 @@ class MyTable extends React.Component {
             rowHeight={30}
             headerHeight={80}
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
-            <Column dataKey="id" width={75} label={'Id' + (this.state.sortBy === 'id' ? sortDirArrow : '')}  headerRenderer={this._renderHeader.bind(this)}/>
+            <Column dataKey="dataSet" width={200} label={'Data Set'+ (this.state.sortBy === 'dataSet' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column dataKey="ensemble" width={200} label={'Ensemble'+ (this.state.sortBy === 'ensemble' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="property1" width={200} label={'Property 1' + (this.state.sortBy === 'property1' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
         </Table>;
