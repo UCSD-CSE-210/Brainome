@@ -7,3 +7,4 @@ team/default_config.py
 team/static/bundle.js
 user-login.sqlite
 *.swp
+*.webassets*
