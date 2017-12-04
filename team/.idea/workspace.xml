@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c37e1277-836a-4daa-97b3-c27039d8db18" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/frontend.py" afterPath="$PROJECT_DIR$/frontend.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/js/components/dataSetTabular.js" afterPath="$PROJECT_DIR$/js/components/dataSetTabular.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -20,8 +19,8 @@
       <file leaf-file-name="dataSetTabular.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/js/components/dataSetTabular.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="288">
-              <caret line="21" column="69" lean-forward="false" selection-start-line="21" selection-start-column="69" selection-end-line="21" selection-end-column="69" />
+            <state relative-caret-position="486">
+              <caret line="32" column="108" lean-forward="false" selection-start-line="32" selection-start-column="108" selection-end-line="32" selection-end-column="108" />
               <folding />
             </state>
           </provider>
@@ -239,12 +238,12 @@
       <workItem from="1510898465266" duration="123000" />
       <workItem from="1510941820711" duration="800000" />
       <workItem from="1510943000728" duration="4279000" />
-      <workItem from="1512365394556" duration="13393000" />
+      <workItem from="1512365394556" duration="13751000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="67779000" />
+    <option name="totallyTimeSpent" value="68137000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="196" y="156" width="1601" height="1223" extended-state="0" />
@@ -557,7 +556,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="4" selection-end-column="79" />
           <folding>
-            <element signature="e#0#60#0" expanded="true" />
+            <element signature="e#0#60#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -606,8 +605,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/js/components/dataSetTabular.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="21" column="69" lean-forward="false" selection-start-line="21" selection-start-column="69" selection-end-line="21" selection-end-column="69" />
+        <state relative-caret-position="486">
+          <caret line="32" column="108" lean-forward="false" selection-start-line="32" selection-start-column="108" selection-end-line="32" selection-end-column="108" />
           <folding />
         </state>
       </provider>
