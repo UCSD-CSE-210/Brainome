@@ -25,8 +25,8 @@ frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 # Find all the samples in the data directory
 dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
-dir_list_links=[Link(x, x) for x in dir_list]
-dir_list_links.append(Link('Ensembles', 'tabular/ensemble'))
+dir_list_links=[Link(x, "/" + x) for x in dir_list]
+dir_list_links.append(Link('Ensembles', '/tabular/ensemble'))
 
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))
