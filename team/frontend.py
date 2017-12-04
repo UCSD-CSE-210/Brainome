@@ -167,8 +167,12 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
 
 @frontend.route('/tabular/ensemble')
-def tabular_screen():
+def ensemble_tabular_screen():
     return render_template('tabular_ensemble.html')
+
+@frontend.route('/tabular/dataset')
+def data_set_tabular_screen():
+    return render_template('tabular_data_set.html')
 
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
