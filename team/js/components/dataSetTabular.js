@@ -2,13 +2,13 @@ import React from 'react';
 import {Table, Column, Cell} from 'fixed-data-table';
 import "fixed-data-table/dist/fixed-data-table.css";
 
-class dataTable extends React.Component {
+class MyTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.rows = [{"id":1,"ensemble":"ensemble1","datasets":["data1", "data2"]},
-            {"id":2,"ensemble":"ensemble2","datasets":["data3", "data4"]},
-            {"id":3,"ensemble":"ensemble3","datasets":["data2", "data3"]}];
+        this.rows = [{"id":1,"ensemble":"ensemble1","property1":["data1", "data2"]},
+            {"id":2,"ensemble":"ensemble2","property1":["data3", "data4"]},
+            {"id":3,"ensemble":"ensemble3","property1":["data2", "data5"]}];
         this.state = {
             filteredDataList : this.rows,
             sortBy: 'id',
@@ -30,7 +30,7 @@ class dataTable extends React.Component {
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
             <Column dataKey="id" width={75} label={'Id' + (this.state.sortBy === 'id' ? sortDirArrow : '')}  headerRenderer={this._renderHeader.bind(this)}/>
             <Column dataKey="ensemble" width={200} label={'Ensemble'+ (this.state.sortBy === 'ensemble' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
-            <Column  dataKey="datasets" width={200} label={'Data Sets' + (this.state.sortBy === 'datasets' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="property1" width={200} label={'Property 1' + (this.state.sortBy === 'property1' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
         </Table>;
     }
     _onFilterChange(cellDataKey, event) {
@@ -89,4 +89,4 @@ class dataTable extends React.Component {
     }
 }
 
-module.exports = dataTable;
+module.exports = MyTable;

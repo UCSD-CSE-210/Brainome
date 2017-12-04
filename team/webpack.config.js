@@ -3,12 +3,12 @@ var path = require('path');
 module.exports = {  
   devtool: 'inline-source-map',
   entry: {
-      tabular_ensemble: "./js/containers/ensembleTabularContainer.js",
-      tabular_data_set: "./js/containers/dataSetTabularContainer.js"
+      "tabular_ensemble": "./js/containers/ensembleTabularContainer.js",
+      "tabular_data_set": "./js/containers/dataSetTabularContainer.js"
   },
   output: {
     path: path.join(__dirname, 'static'),
-    filename: "[name].js",
+      filename: "[name].js"
   },
    module: {
     loaders: [
