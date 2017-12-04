@@ -15,6 +15,16 @@ class MyTable extends React.Component {
             sortDir: 'ASC'
         };
     }
+    componentWillMount(){
+        fetch('/content/ensemble_list').then(
+            results => {
+                return results.json();
+            }
+        ).then( data => {
+                console.log(data);
+            }
+        )
+    }
 
     render() {
         var sortDirArrow = '';
