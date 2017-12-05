@@ -3,7 +3,7 @@
 For actual content generation see the content.py module.
 """
 from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash
-from flask_nav.elements import Navbar, Link, View
+from flask_nav.elements import Navbar, Link, View, Text
 from flask_login import (current_user, login_required, login_user,
                          logout_user)
 from .content import get_cluster_plot, search_gene_names, \
@@ -16,13 +16,32 @@ from os import walk
 from .forms import LoginForm
 from .user import User
 
+import dominate
+from dominate.tags import img
+
+# get images here
+lockimage = img(src='static/img/lock.png', height='20', width='20')
+unlockimage = img(src='static/img/unlock.png', height='20', width='20')
+separator = img(src='static/img/separate.png', height='25', width='10')
+
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
 # Find all the samples in the data directory
 dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
-dir_list_links=[Link(x, x) for x in dir_list]
+dir_list_links = []
 
+first = True
+
+for x in dir_list:
+	if not first:
+		dir_list_links.append(Text(separator))
+	dir_list_links.append(Link(x, x))
+	# if x is private, add lockimage
+	dir_list_links.append(Text(lockimage))
+	# if x is public, add unlockimage
+	dir_list_links.append(Text(unlockimage))
+	first = False
 
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))

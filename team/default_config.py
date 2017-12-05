@@ -12,8 +12,8 @@ JSONIFY_PRETTYPRINT_REGULAR = False
 MINIFY_PAGE = True  
 
 # TODO: Consider changing to point to new_data
-DATA_DIR = '/srv/scmdb_py/data'
-PUBLISHED_DATA_DIR = '/srv/scmdb_py/data'
-ALL_DATA_DIR = '/srv/scmdb_py_newdata/data'
+DATA_DIR = '/Users/tliu/Documents/Brainome/mydata/srv/scmdb_py/data'
+PUBLISHED_DATA_DIR = '/Users/tliu/Documents/Brainome/mydata/srv/scmdb_py/data'
+ALL_DATA_DIR = '/Users/tliu/Documents/Brainome/mydata/srv/scmdb_py_newdata/data'
 
 PUBLISHED_DIRECTORIES = ["mouse_published", "human_hv1_published"]
