@@ -10,6 +10,7 @@ from collections import OrderedDict
 import time
 
 import pandas
+import pandas as pd
 import plotly
 from random import sample
 import colorlover as cl
