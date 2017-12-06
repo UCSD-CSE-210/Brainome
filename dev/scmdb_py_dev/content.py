@@ -34,7 +34,7 @@ class FailToGraphException(Exception):
 @content.route('/content/ensemble_list')
 def get_ensemble_list():
 
-    is_privileged = 0
+    is_privileged = current_user.is_authenticated
 
     if is_privileged:
         ensemble_list = next(os.walk(current_app.config['ALL_DATA_DIR']))[1]
@@ -1391,7 +1391,7 @@ def randomize_cluster_colors():
 @content.route('/content/metadata/<ensemble>')
 def get_metadata(ensemble):
 
-    is_privileged = 1
+    is_privileged = current_user.is_authenticated
     postfix = "metadata_example.csv"
 
     # datasets = ensemble.split("_")
