@@ -1410,33 +1410,33 @@ def get_metadata(ensemble):
     # cur.execute(query)
     #
     # rows = cur.fetchall()
-    # df = pd.DataFrame()
+    df = pd.DataFrame()
 
     if is_privileged:
 
-        meta_path = "{}/{}/{}".format(current_app.config['DATA_DIR'], ensemble, postfix)
+        meta_path = "{}/{}/{}".format(current_app.config['ALL_DATA_DIR'], ensemble, postfix)
 
     else:
 
-        meta_path = "{}/{}/{}".format(current_app.config['ALL_DATA_DIR'], ensemble, postfix)
+        meta_path = "{}/{}/{}".format(current_app.config['DATA_DIR'], ensemble, postfix)
 
     # for r in rows:
     #     if privilege or (r[1] == 1):
     #         meta_path = r[5] + postfix
     #         print("Extracting data for: " + meta_path)
-    # try:
-    #     temp = pd.read_csv(meta_path)
-    #     df = df.append(temp)
-    # except:
-    #     print("File '" + meta_path + "' not found.")
-    #
-    # if len(df) > 0:
-    #     df = df.reset_index()
-    #     df_dict = df.to_dict()
-    #     return json.dumps(df_dict)
-    # else:
-    #     return False
-    f = open(meta_path, 'r')
-    reader = csv.DictReader(f)
-    out = json.dumps({"data": [row for row in reader]})
-    return out
+    try:
+        temp = pd.read_csv(meta_path)
+        df = df.append(temp)
+    except:
+        print("File '" + meta_path + "' not found.")
+
+    if len(df) > 0:
+        df = df.set_index("Sample")
+        df_json = df.to_json(orient = "index")
+        return df_json
+    else:
+        return False
+    # f = open(meta_path, 'r')
+    # reader = csv.DictReader(f)
+    # out = json.dumps({"data": [row for row in reader]})
+    # return out
