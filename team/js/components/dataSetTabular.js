@@ -59,7 +59,7 @@ class MyTable extends React.Component {
             rowHeight={30}
             headerHeight={90}
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
-            <Column dataKey="Sample" width={220} label={'Sample'+ (this.state.sortBy === 'Sample' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column dataKey="Sample" width={250} label={'Sample'+ (this.state.sortBy === 'Sample' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="Library pool" width={75} label={'Library Pool' + (this.state.sortBy === 'Library pool' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="Layer" width={75} label={'Layer' + (this.state.sortBy === 'Layer' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="Total reads" width={100} label={'Total Reads' + (this.state.sortBy === 'Total reads' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
