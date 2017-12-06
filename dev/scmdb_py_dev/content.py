@@ -16,8 +16,8 @@ from random import sample
 import colorlover as cl
 import colorsys
 
+import json
 from flask import current_app
-from flask_login import current_user
 from numpy import arange, random
 from plotly.graph_objs import Layout, Box, Scatter, Scattergl, Scatter3d, Heatmap
 
@@ -50,9 +50,9 @@ def get_ensemble_list():
         ensembles_json_list.append(ens_dict)
 
     data_dict = {"data":ensembles_json_list}
-    print("Ensemble dictionary created.")
-    print(str(data_dict))
-    return str(data_dict)
+    ens_json = json.dumps(data_dict)
+
+    return ens_json
 
 # Utilities
 def species_exists(species):
