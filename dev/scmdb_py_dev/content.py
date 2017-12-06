@@ -1429,6 +1429,6 @@ def get_metadata(ensemble):
 
     if len(df) > 0:
         df = df.reset_index()
-        return df.to_json()
+        return eval(df.to_json())
     else:
         return False
