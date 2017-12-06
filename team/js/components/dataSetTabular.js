@@ -4,28 +4,47 @@ import "fixed-data-table/dist/fixed-data-table.css";
 
 class MyTable extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.rows = fetch('/content/metadata/human_MB_EB').then(
-            results => {
-                return results.json();
-            }
-        );
+    constructor() {
+        super();
+
         this.state = {
-            filteredDataList : this.rows,
-            sortBy: 'sample',
-            sortDir: 'ASC'
+            rows: [],
+            filteredDataList: [],
+            sortBy: 'Sample',
+            sortDir: 'ASC',
+            wheight: '0',
+            wwidth: '0'
         };
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
     }
-    componentWillMount(){
+
+    componentWillMount() {
+        this.jsonList();
+    }
+    componentDidMount() {
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+    updateWindowDimensions() {
+        this.setState({ wwidth: window.innerWidth, wheight: window.innerHeight });
+    }
+
+    jsonList() {
         fetch('/content/metadata/human_MB_EB').then(
-            results => {
-                return results.json();
+            function(response){
+                return response.json();
             }
-        ).then( data => {
-                console.log(data);
-            }
-        )
+        ).then(data => {
+            var d = data;
+            console.log(d);
+            this.setState({
+                rows: d.data,
+                filteredDataList: d.data
+            })
+        })
     }
 
     render() {
@@ -34,17 +53,29 @@ class MyTable extends React.Component {
             sortDirArrow = this.state.sortDir === 'DESC' ? ' ↓' : ' ↑';
         }
         return <Table
-            height={54+((this.state.filteredDataList.length+1) * 30)}
-            width={500}
+            height={this.state.wheight - 150}
+            width={this.state.wwidth - 100}
             rowsCount={this.state.filteredDataList.length}
             rowHeight={30}
-            headerHeight={80}
+            headerHeight={90}
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
-            <Column dataKey="sample" width={100} label={'Sample'+ (this.state.sortBy === 'sample' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
-            <Column  dataKey="property1" width={200} label={'Property 1' + (this.state.sortBy === 'property1' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
-            <Column  dataKey="property2" width={200} label={'Property 2' + (this.state.sortBy === 'property2' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column dataKey="Sample" width={220} label={'Sample'+ (this.state.sortBy === 'Sample' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Library pool" width={75} label={'Library Pool' + (this.state.sortBy === 'Library pool' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Layer" width={75} label={'Layer' + (this.state.sortBy === 'Layer' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Total reads" width={100} label={'Total Reads' + (this.state.sortBy === 'Total reads' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Mapped reads" width={100} label={'Mapped reads' + (this.state.sortBy === 'Mapped reads' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Mapping rate" width={100} label={'Mapping rate' + (this.state.sortBy === 'Mapping rate' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Nonclonal reads" width={100} label={'Nonclonal reads' + (this.state.sortBy === 'Nonclonal reads' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="% Nonclonal rates" width={150} label={'% Nonclonal rates' + (this.state.sortBy === '% Nonclonal rates' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="mCCC/CCC" width={100} label={'mCCC/CCC' + (this.state.sortBy === 'mCCC/CCC' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="mCG/CG" width={100} label={'mCG/CG' + (this.state.sortBy === 'mCG/CG' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="mCH/CH" width={100} label={'mCH/CH' + (this.state.sortBy === 'mCH/CH' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="Estimated mCG/CG" width={100} label={'Estimated mCG/CG' + (this.state.sortBy === 'Estimated mCG/CG' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="% Genome covered" width={100} label={'% Genome covered' + (this.state.sortBy === '% Genome covered' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column  dataKey="allc file location (Mukamel lab)" width={200} label={'allc file location (Mukamel lab)' + (this.state.sortBy === 'allc file location (Mukamel lab)' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
         </Table>;
     }
+
     _onFilterChange(cellDataKey, event) {
         if (!event.target.value) {
             this.setState({
