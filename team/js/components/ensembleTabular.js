@@ -6,9 +6,14 @@ class MyTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.rows = [{"id":1,"ensemble":"ensemble1","datasets":["data1", "data2"]},
-            {"id":2,"ensemble":"ensemble2","datasets":["data3", "data4"]},
-            {"id":3,"ensemble":"ensemble3","datasets":["data2", "data3"]}];
+        this.rows = fetch('/content/ensemble_list').then(
+            results => {
+                return results.json();
+            }
+        ).then( data => {
+                console.log(data);
+            }
+        );
         this.state = {
             filteredDataList : this.rows,
             sortBy: 'id',

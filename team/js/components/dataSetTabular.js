@@ -6,14 +6,26 @@ class MyTable extends React.Component {
 
     constructor(props) {
         super(props);
-        this.rows = [{"dataSet":"DS1","property1":"xxxx", "property2": "xx"},
-            {"dataSet":"DS2","property1":"xx", "property2": "x"},
-            {"dataSet":"DS3","property1":"xxx", "property2": "xxxx"}];
+        this.rows = fetch('/content/metadata/human_MB_EB').then(
+            results => {
+                return results.json();
+            }
+        );
         this.state = {
             filteredDataList : this.rows,
-            sortBy: 'dataSet',
+            sortBy: 'sample',
             sortDir: 'ASC'
         };
+    }
+    componentWillMount(){
+        fetch('/content/metadata/human_MB_EB').then(
+            results => {
+                return results.json();
+            }
+        ).then( data => {
+                console.log(data);
+            }
+        )
     }
 
     render() {
@@ -28,7 +40,7 @@ class MyTable extends React.Component {
             rowHeight={30}
             headerHeight={80}
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
-            <Column dataKey="dataSet" width={100} label={'Data Set'+ (this.state.sortBy === 'dataSet' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            <Column dataKey="sample" width={100} label={'Sample'+ (this.state.sortBy === 'sample' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="property1" width={200} label={'Property 1' + (this.state.sortBy === 'property1' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
             <Column  dataKey="property2" width={200} label={'Property 2' + (this.state.sortBy === 'property2' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
         </Table>;
