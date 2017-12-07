@@ -19,32 +19,38 @@ from .user import User
 import dominate
 from dominate.tags import img
 
-# get images here
-lockimage = img(src='static/img/lock.png', height='20', width='20')
-unlockimage = img(src='static/img/unlock.png', height='20', width='20')
-separator = img(src='static/img/separate.png', height='25', width='10')
+import os.path
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
-# Find all the samples in the data directory
-dir_list = next(walk(current_app.config['DATA_DIR']))[1]
+@frontend.before_request
+def process_navbar():
+	# get images here
+	lockimage = img(src='static/img/lock.png', height='20', width='20')
+	unlockimage = img(src='static/img/unlock.png', height='20', width='20')
+	separator = img(src='static/img/separate.png', height='25', width='10')
 
-dir_list_links = []
+	# Find all the samples in the data directory
+	dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
-first = True
+	dir_list_links = []
 
-for x in dir_list:
-	if not first:
-		dir_list_links.append(Text(separator))
-	dir_list_links.append(Link(x, x))
-	# if x is private, add lockimage
-	dir_list_links.append(Text(lockimage))
-	# if x is public, add unlockimage
-	dir_list_links.append(Text(unlockimage))
-	first = False
+	first = True
 
-nav.register_element('frontend_top',
-                     Navbar('',*dir_list_links))
+	for x in dir_list:
+		if not first:
+			dir_list_links.append(Text(separator))
+		dir_list_links.append(Link(x, x))
+		if current_user.is_authenticated:
+			# if x is public, add unlockimage
+			if os.path.islink(x):
+				dir_list_links.append(Text(unlockimage))
+			# if x is private, add lockimage
+			else:
+				dir_list_links.append(Text(lockimage))
+		first = False
+
+	nav.register_element('frontend_top', Navbar('',*dir_list_links))
 
 # Visitor routes
 @frontend.route('/')
