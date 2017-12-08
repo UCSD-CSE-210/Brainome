@@ -1,12 +1,14 @@
-var webpack = require('webpack');  
+var webpack = require('webpack');
+var path = require('path');
 module.exports = {  
   devtool: 'inline-source-map',
-  entry: [
-    "./js/containers/ensembleTabularContainer.js"
-  ],
+  entry: {
+      "tabular_ensemble": "./js/containers/ensembleTabularContainer.js",
+      "tabular_data_set": "./js/containers/dataSetTabularContainer.js"
+  },
   output: {
-    path: __dirname + '/static',
-    filename: "tabular_ensemble.js"
+    path: path.join(__dirname, 'static'),
+      filename: "[name].js"
   },
    module: {
     loaders: [

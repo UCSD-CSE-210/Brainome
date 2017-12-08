@@ -25,9 +25,11 @@ frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 # Find all the samples in the data directory
 dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
+
 # HOTFIX: '/' character needed to prevent concatenation of url
 dir_list_links=[Link(x, "/" + x) for x in dir_list]
 dir_list_links.append(Link('Ensembles', '/tabular/ensemble'))
+dir_list_links.append(Link('Data Sets', 'tabular/dataset'))
 
 nav.register_element('frontend_top',
                      Navbar('',*dir_list_links))
@@ -168,8 +170,12 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
 
 @frontend.route('/tabular/ensemble')
-def tabular_screen():
+def ensemble_tabular_screen():
     return render_template('tabular_ensemble.html')
+
+@frontend.route('/tabular/dataset')
+def data_set_tabular_screen():
+    return render_template('tabular_data_set.html')
 
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
