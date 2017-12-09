@@ -12,7 +12,9 @@
 
 {% macro header_items(current_user) %}
     {% set endpoints = [
-      ('frontend.index', 'Home', 'home')
+      ('frontend.index', 'Home', 'home'),
+      ('frontend.ensemble_tabular_screen', 'Ensembles', 'ensemble'),
+      ('frontend.data_set_tabular_screen', 'Data Sets', 'dataset')
     ]%}
     {% set user = [] %}
     {#    This means that we are redirecting to the frontend.admin function if the current user is auhenticated.#}

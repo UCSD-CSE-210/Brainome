@@ -177,6 +177,10 @@ def ensemble_tabular_screen():
 def data_set_tabular_screen():
     return render_template('tabular_data_set.html')
 
+@frontend.route('/navbar')
+def nav_bar_screen():
+    return render_template('navbar_only.html')
+
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
