@@ -3,7 +3,7 @@
 For actual content generation see the content.py module.
 """
 from flask import Blueprint, render_template, jsonify, request, redirect, current_app, flash, abort, url_for
-from flask_nav.elements import Navbar, Link, View
+from flask_nav.elements import Navbar, Link, View, Text
 from flask_login import (current_user, login_required, login_user,
                          logout_user)
 from .content import get_cluster_plot, search_gene_names, \
@@ -20,19 +20,53 @@ from .decorators import admin_required
 from flask_rq import get_queue
 from flask_mail import Mail, Message
 
+import dominate
+from dominate.tags import img
+
+import os.path
+
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
 # Find all the samples in the data directory
-dir_list = next(walk(current_app.config['DATA_DIR']))[1]
+#dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
 
 # HOTFIX: '/' character needed to prevent concatenation of url
-dir_list_links=[Link(x, "/" + x) for x in dir_list]
-dir_list_links.append(Link('Ensembles', '/tabular/ensemble'))
-dir_list_links.append(Link('Data Sets', '/tabular/dataset'))
+#dir_list_links=[Link(x, "/" + x) for x in dir_list]
+#dir_list_links.append(Link('Ensembles', '/tabular/ensemble'))
+#dir_list_links.append(Link('Data Sets', '/tabular/dataset'))
 
-nav.register_element('frontend_top',
-                     Navbar('',*dir_list_links))
+#nav.register_element('frontend_top',
+#                     Navbar('',*dir_list_links))
+
+@frontend.before_request
+def process_navbar():
+	# get images here
+	lockimage = img(src='static/img/lock.png', height='20', width='20')
+	unlockimage = img(src='static/img/unlock.png', height='20', width='20')
+	separator = img(src='static/img/separate.png', height='25', width='10')
+
+	# Find all the samples in the data directory
+	dir_list = next(walk(current_app.config['DATA_DIR']))[1]
+
+	dir_list_links = []
+
+	first = True
+
+	for x in dir_list:
+		if not first:
+			dir_list_links.append(Text(separator))
+		dir_list_links.append(Link(x, x))
+		if current_user.is_authenticated:
+			# if x is public, add unlockimage
+			if os.path.islink(x):
+				dir_list_links.append(Text(unlockimage))
+			# if x is private, add lockimage
+			else:
+				dir_list_links.append(Text(lockimage))
+		first = False
+
+	nav.register_element('frontend_top', Navbar('',*dir_list_links))
 
 # Visitor routes
 @frontend.route('/')
