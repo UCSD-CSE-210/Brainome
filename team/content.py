@@ -7,6 +7,7 @@ import sqlite3
 from collections import OrderedDict
 import time
 
+import json
 import pandas
 import pandas as pd
 import json
@@ -35,17 +36,27 @@ class FailToGraphException(Exception):
 
 @content.route('/content/ensemble_list')
 def get_ensemble_list():
-
-    is_privileged = 0
-
-    if is_privileged:
-        ensemble_list = next(os.walk(current_app.config['ALL_DATA_DIR']))[1]
-    else:
-        ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
-
-    json_ens = json.dumps({"ensembles":ensemble_list})
-
-    return json_ens
+ 
+     is_privileged = 0
+ 
+     if is_privileged:
+         ensemble_list = next(os.walk(current_app.config['ALL_DATA_DIR']))[1]
+     else:
+         ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
+ 
+     ensembles_json_list = []
+ 
+     for ensemble in ensemble_list:
+ 
+         # Assuming each ensemble to be it's own dataset
+         ens_datasets = [ensemble] # This part will need to be updated for future data refactoring
+         ens_dict = {"ensemble": ensemble, "datasets": ens_datasets}
+         ensembles_json_list.append(ens_dict)
+ 
+     data_dict = {"data":ensembles_json_list}
+     ens_json = json.dumps(data_dict)
+ 
+     return ens_json
 
 # Utilities
 def species_exists(species):
@@ -1384,7 +1395,7 @@ def randomize_cluster_colors():
 @content.route('/content/metadata/<ensemble>')
 def get_metadata(ensemble):
 
-    is_privileged = 0
+    is_privileged = 1
     postfix = "metadata_example.csv"
 
     # datasets = ensemble.split("_")
@@ -1403,7 +1414,7 @@ def get_metadata(ensemble):
     # cur.execute(query)
     #
     # rows = cur.fetchall()
-    df = pd.DataFrame()
+    # df = pd.DataFrame()
 
     if is_privileged:
 
@@ -1417,14 +1428,21 @@ def get_metadata(ensemble):
     #     if privilege or (r[1] == 1):
     #         meta_path = r[5] + postfix
     #         print("Extracting data for: " + meta_path)
-    try:
-        temp = pd.read_csv(meta_path)
-        df = df.append(temp)
-    except:
-        print("File '" + meta_path + "' not found.")
+    # try:
+    #    temp = pd.read_csv(meta_path)
+    #    df = df.append(temp)
+    #except:
+    #    print("File '" + meta_path + "' not found.")
 
-    if len(df) > 0:
-        df = df.reset_index()
-        return df.to_json()
-    else:
-        return False
+    #if len(df) > 0:
+    #    df = df.reset_index()
+    #    df_dict = df.to_dict()
+    #    print(df.to_dict())
+    #    print(df.to_json())
+    #    return json.dumps(df_dict)
+    #else:
+    #    return False
+    f = open(meta_path, 'r')
+    reader = csv.DictReader(f)
+    out = json.dumps({"data":[row for row in reader]})
+    return out
