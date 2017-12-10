@@ -1,4 +1,3 @@
-
 {% macro render_menu_items(endpoints) %}
     {% for endpoint, name, icon in endpoints %}
         <a class="item {% if request.endpoint == endpoint %}active{% endif %}" href="{{ url_for(endpoint) }}">
@@ -20,7 +19,7 @@
     {#    This means that we are redirecting to the frontend.admin function if the current user is auhenticated.#}
 {#    It is using the Jinja2 templates shared in the slack channel#}
 {#    #}
-    {% if current_user.is_authenticated %}
+    {% if current_user.can(255) %}
       {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 'user')]) %}
     {% endif %}
     {{ render_menu_items( endpoints +  user ) }}
