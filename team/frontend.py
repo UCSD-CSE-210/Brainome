@@ -27,39 +27,43 @@ import os.path
 
 frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
-# Find all the samples in the data directory
-#dir_list = next(walk(current_app.config['DATA_DIR']))[1]
-
 
 # HOTFIX: '/' character needed to prevent concatenation of url
 @frontend.before_request
 def process_navbar():
-	# get images here
-	lockimage = img(src='static/img/lock.png', height='20', width='20')
-	unlockimage = img(src='static/img/unlock.png', height='20', width='20')
-	separator = img(src='static/img/separate.png', height='25', width='10')
+    # get images here
+    lockimage = img(src='static/img/lock.png', height='20', width='20')
+    unlockimage = img(src='static/img/unlock.png', height='20', width='20')
+    separator = img(src='static/img/separate.png', height='25', width='10')
 
-	# Find all the samples in the data directory
-	dir_list = next(walk(current_app.config['DATA_DIR']))[1]
+    # Find all the samples in the data directory
+    dir_list = []
+    if current_user.is_authenticated:
+        current_app.config['DATA_DIR'] = current_app.config['ALL_DATA_DIR']
+        # dir_list = next(walk(current_app.config['ALL_DATA_DIR']))[1]
+    else:
+        current_app.config['DATA_DIR'] = current_app.config['PUBLISHED_DATA_DIR']
+        # dir_list = next(walk(current_app.config['PUBLISHED_DATA_DIR']))[1]
+    dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
-	dir_list_links = []
+    dir_list_links = []
 
-	first = True
+    first = True
 
-	for x in dir_list:
-		if not first:
-			dir_list_links.append(Text(separator))
-		dir_list_links.append(Link(x, "/" + x))
-		if current_user.is_authenticated:
-			# if x is public, add unlockimage
-			if os.path.islink(x):
-				dir_list_links.append(Text(unlockimage))
-			# if x is private, add lockimage
-			else:
-				dir_list_links.append(Text(lockimage))
-		first = False
+    for x in dir_list:
+        if not first:
+            dir_list_links.append(Text(separator))
+        dir_list_links.append(Link(x, "/" + x))
+        if current_user.is_authenticated:
+            # x is public: add unlockimage
+            if os.path.islink(x):
+                dir_list_links.append(Text(unlockimage))
+            # x is private: add lockimage
+            else:
+                dir_list_links.append(Text(lockimage))
+        first = False
 
-	nav.register_element('frontend_top', Navbar('',*dir_list_links))
+    nav.register_element('frontend_top', Navbar('',*dir_list_links))
 
 # Visitor routes
 @frontend.route('/')

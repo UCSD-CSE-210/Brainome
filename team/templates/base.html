@@ -3,17 +3,6 @@
 {% block title %}Single Cell Methylome{% endblock %}
 {% import "bootstrap/fixes.html" as fixes %}
 {% block head %}
-
-{% if current_user.is_authenticated %}
-    <div id="logout_div" style="padding: 20px; text-align: right">
-    <a href="/logout">Logout</a>
-    </div>
-{% else %}
-	<div id="login_div" style="padding: 20px; text-align: right">
-	<a href="/login">Login</a>
-	</div>
-{% endif %}
-
     {{super()}}
     {{fixes.ie8()}}
 {%- endblock %}

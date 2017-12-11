@@ -36,6 +36,10 @@
       ] %}
       {{ render_menu_items(endpoints) }}
     {% else %}
+      {% set endpoints = [
+        ('frontend.login', 'Login', 'sign in')
+      ] %}
+      {{ render_menu_items(endpoints) }}
     {% endif %}
 {% endmacro %}
 
