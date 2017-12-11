@@ -32,13 +32,6 @@ frontend = Blueprint('frontend', __name__) # Flask "bootstrap"
 
 
 # HOTFIX: '/' character needed to prevent concatenation of url
-#dir_list_links=[Link(x, "/" + x) for x in dir_list]
-#dir_list_links.append(Link('Ensembles', '/tabular/ensemble'))
-#dir_list_links.append(Link('Data Sets', '/tabular/dataset'))
-
-#nav.register_element('frontend_top',
-#                     Navbar('',*dir_list_links))
-
 @frontend.before_request
 def process_navbar():
 	# get images here
@@ -56,7 +49,7 @@ def process_navbar():
 	for x in dir_list:
 		if not first:
 			dir_list_links.append(Text(separator))
-		dir_list_links.append(Link(x, x))
+		dir_list_links.append(Link(x, "/" + x))
 		if current_user.is_authenticated:
 			# if x is public, add unlockimage
 			if os.path.islink(x):
@@ -210,6 +203,10 @@ def ensemble_tabular_screen():
 @frontend.route('/tabular/dataset')
 def data_set_tabular_screen():
     return render_template('tabular_data_set.html')
+
+@frontend.route('/navbar')
+def nav_bar_screen():
+    return render_template('navbar_only.html')
 
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
