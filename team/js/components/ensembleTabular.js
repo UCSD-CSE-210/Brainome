@@ -9,6 +9,7 @@ class MyTable extends React.Component {
 
         this.state = {
             rows: [],
+            columnSize: 0,
             filteredDataList: [],
             sortBy: 'ensemble',
             sortDir: 'ASC'};
@@ -25,28 +26,46 @@ class MyTable extends React.Component {
         ).then(data => {
                 var d = data;
                 console.log(d);
+                var columnSize = 0;
+                for (var i = 0; i < d.data.length; i++) {
+                    var dict_length = Object.keys(d.data[i]).length;
+                    console.log(dict_length);
+                    if (dict_length - 2 > columnSize) {
+                        columnSize = dict_length - 2;
+                        console.log(columnSize)
+                    }
+                }
+
                 this.setState({
                     rows: d.data,
-                    filteredDataList: d.data
+                    filteredDataList: d.data,
+                    columnSize
                 })
             })
     }
 
     render() {
-        console.log('here' + this.state.rows);
+        console.log('column size: ' + this.state.columnSize);
         var sortDirArrow = '';
         if (this.state.sortDir !== null){
             sortDirArrow = this.state.sortDir === 'DESC' ? ' ↓' : ' ↑';
         }
+        var dataset_columns = []
+        for (var index = 0; index < this.state.columnSize; index++) {
+            var column_tag = "dataset_" + (index + 1)
+            console.log(column_tag)
+            var column_name = "Data Set " + (index + 1)
+            dataset_columns.push(<Column key={column_tag} dataKey={column_tag} width={200} label={column_name + (this.state.sortBy === column_tag ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>)
+        }
         return <Table
             height={52+((this.state.filteredDataList.length+1) * 30)}
-            width={400}
+            width={(this.state.columnSize + 1) * 200}
             rowsCount={this.state.filteredDataList.length}
             rowHeight={30}
             headerHeight={80}
             rowGetter={function(rowIndex) {return this.state.filteredDataList[rowIndex]; }.bind(this)}>
             <Column dataKey="ensemble" width={200} label={'Ensemble'+ (this.state.sortBy === 'ensemble' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
-            <Column  dataKey="datasets" width={200} label={'Data Sets' + (this.state.sortBy === 'datasets' ? sortDirArrow : '')} headerRenderer={this._renderHeader.bind(this)}/>
+            {dataset_columns}
         </Table>;
     }
     _onFilterChange(cellDataKey, event) {

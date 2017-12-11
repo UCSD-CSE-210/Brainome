@@ -40,11 +40,11 @@ def process_navbar():
     dir_list = []
     if current_user.is_authenticated:
         current_app.config['DATA_DIR'] = current_app.config['ALL_DATA_DIR']
-        # dir_list = next(walk(current_app.config['ALL_DATA_DIR']))[1]
     else:
         current_app.config['DATA_DIR'] = current_app.config['PUBLISHED_DATA_DIR']
-        # dir_list = next(walk(current_app.config['PUBLISHED_DATA_DIR']))[1]
-    dir_list = next(walk(current_app.config['DATA_DIR']))[1]
+    dir_list = next(walk(current_app.config['DATA_DIR'] + "/ensembles"))[1]
+    published_dir_list = next(walk(current_app.config['PUBLISHED_DATA_DIR'] + 
+            "/ensembles"))[1]
 
     dir_list_links = []
 
@@ -56,7 +56,7 @@ def process_navbar():
         dir_list_links.append(Link(x, "/" + x))
         if current_user.is_authenticated:
             # x is public: add unlockimage
-            if os.path.islink(x):
+            if x in published_dir_list:
                 dir_list_links.append(Text(unlockimage))
             # x is private: add lockimage
             else:
@@ -73,8 +73,8 @@ def index():
     html = \
     """To be redirected manually, click <a href="./hsa">here</a>.
     <script>
-        window.location = "./hsa"; 
-        window.location.replace("./hsa");
+        window.location = "./human_hv1_published"; 
+        window.location.replace("./human_hv1_published");
     </script>
     """
     return html
