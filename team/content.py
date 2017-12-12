@@ -360,15 +360,11 @@ def get_gene_mch(species, gene, outliers):
     dataframe_list = []
     root, dirs, files = next(os.walk(datasets_path))
     for dir in dirs:
-        print("In get_gene_mch - Checking", dir)
 
         try:
             file_string = '{}/{}/mch/{}*'.format(root, dir, gene)
-            print("In get_gene_mch - file_string:", file_string)
             glob_list = glob.glob(file_string)
-            print("In get_gene_mch - glob_list:", glob_list)
             filename = glob_list[0]
-            print("In get_gene_mch - filename:", filename)
             
         except IndexError:
             continue
@@ -383,55 +379,14 @@ def get_gene_mch(species, gene, outliers):
         except FileNotFoundError:
             continue
 
-        """
-        dataframe_merged = pandas.merge(
-            cluster[['samp', 'tsne_x', 'tsne_y', 'cluster_label', 'cluster_name', 'cluster_ordered', 'cluster_ortholog']],
-            mch[['samp', 'original', 'normalized']],
-            on='samp',
-            how='left')
-        if not outliers:
-            # Outliers not wanted, remove rows > 99%ile.
-            three_std_dev = dataframe_merged['normalized'].quantile(0.99)
-            dataframe_merged = dataframe_merged[dataframe_merged.normalized <
-                                                three_std_dev]
-
-        dataframe_merged['cluster_ordered'] = pandas.to_numeric(
-            dataframe_merged['cluster_ordered'], errors='coerce')
-        print("IN GET_GENE_MCH -- A", type(dataframe_merged))
-        dataframe_merged['cluster_ordered'] = dataframe_merged[
-            'cluster_ordered'].astype('category')
-        print("IN GET_GENE_MCH -- B", type(dataframe_merged))
-        # dataframe_list.append(dataframe_merged.sort_values(
-        #    by='cluster_ordered', ascending=True).to_dict('records'))
-        print("IN GET_GENE_MCH -- C", type(dataframe_list[-1]))
-        return dataframe_merged.sort_values(
-            by='cluster_ordered', ascending=True).to_dict('records')
-        """
     mch = None
     if len(dataframe_list) == 0:
         return []
     elif len(dataframe_list) == 1:
         mch = dataframe_list[0]
     else:
-        print("IN GET_GENE_MCH -- merging mch")
-        
-        for df in dataframe_list:
-            print("IN GET_GENE_MCH -- columns of dataframe:", list(df))
-            print("IN GET_GENE_MCH -- num of rows in dataframe:", len(df.index))
-
-        # 'axis=1' specifies to merge along the samples column
-        # mch = pandas.concat(dataframe_list, axis=1)
         mch = dataframe_list[0].append(dataframe_list[1:], ignore_index=True)
 
-        print("IN GET_GENE_MCH -- new num rows of concatenated dataframe:", len(mch.index))
-        # mch = dataframe_list[0]
-        """
-        mch = dataframe_list[0]
-        for i in range(1, len(dataframe_list)):
-            mch[mch.isnull()] = dataframe_list[i]
-        """
-
-    print("IN GET_GENE_MCH -- running through given mutations")
 
     dataframe_merged = pandas.merge(
         cluster[['samp', 'tsne_x', 'tsne_y', 'cluster_label', 'cluster_name', 'cluster_ordered', 'cluster_ortholog']],
@@ -504,7 +459,6 @@ def get_cluster_plot(species, grouping):
         if not (grouping in points_3d[0]):
             grouping = "cluster_ordered"
             print("**** Using cluster_ordered")
-
 
     layout3d = Layout(
         autosize=False,
@@ -811,8 +765,6 @@ def get_mch_scatter(species, gene, level, ptile_start, ptile_end):
     """
     points = get_gene_mch(species, gene, True)
 
-    # print("IN GET_GENE_MCH WHERE THE ERROR IS - points:", points)
-
     if not points:
         raise FailToGraphException
 
@@ -834,10 +786,11 @@ def get_mch_scatter(species, gene, level, ptile_start, ptile_end):
 
     # Sets mCH levels below or above the percentiles to %tile limits.
     mch_dataframe = pandas.DataFrame(mch)
+    # mch_dataframe.
+    mch_dataframe.to_csv("/srv/brainome_210/obj_1.csv")
+
     start = mch_dataframe.dropna().quantile(ptile_start)[0].tolist()
     end = mch_dataframe.dropna().quantile(ptile_end).values[0].tolist()
-    print("IN GET_GENE_MCH WHERE THE ERROR IS - start:", start)
-    print("IN GET_GENE_MCH WHERE THE ERROR IS - end:", end)
     mch_colors = [set_color_by_percentile(x, start, end) for x in mch]
 
     colorbar_tickval = list(arange(start, end, (end - start) / 4))
