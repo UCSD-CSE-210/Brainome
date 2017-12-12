@@ -55,8 +55,8 @@ def create_app(configfile=None):
     app.config['MAIL_USE_TLS'] = False
     app.config['MAIL_USE_SSL'] = True
     app.config['MAIL_DEBUG'] = True
-    app.config['MAIL_USERNAME'] = 'apikey'
-    app.config['MAIL_PASSWORD'] = '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'
+    app.config['MAIL_USERNAME'] = ''
+    app.config['MAIL_PASSWORD'] = ''
     # EAM : Set limit on the number of items in cache (RAM)
     cache.init_app(app, config={'CACHE_TYPE': 'simple', 'CACHE_THRESHOLD': 1000})
 
