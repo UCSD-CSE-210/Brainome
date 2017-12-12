@@ -40,11 +40,11 @@ def process_navbar():
     dir_list = []
     if current_user.is_authenticated:
         current_app.config['DATA_DIR'] = current_app.config['ALL_DATA_DIR']
+        # dir_list = next(walk(current_app.config['ALL_DATA_DIR']))[1]
     else:
         current_app.config['DATA_DIR'] = current_app.config['PUBLISHED_DATA_DIR']
-    dir_list = next(walk(current_app.config['DATA_DIR'] + "/ensembles"))[1]
-    published_dir_list = next(walk(current_app.config['PUBLISHED_DATA_DIR'] + 
-            "/ensembles"))[1]
+        # dir_list = next(walk(current_app.config['PUBLISHED_DATA_DIR']))[1]
+    dir_list = next(walk(current_app.config['DATA_DIR']))[1]
 
     dir_list_links = []
 
@@ -56,7 +56,7 @@ def process_navbar():
         dir_list_links.append(Link(x, "/" + x))
         if current_user.is_authenticated:
             # x is public: add unlockimage
-            if x in published_dir_list:
+            if os.path.islink(x):
                 dir_list_links.append(Text(unlockimage))
             # x is private: add lockimage
             else:
@@ -73,8 +73,8 @@ def index():
     html = \
     """To be redirected manually, click <a href="./hsa">here</a>.
     <script>
-        window.location = "./human_hv1_published"; 
-        window.location.replace("./human_hv1_published");
+        window.location = "./hsa"; 
+        window.location.replace("./hsa");
     </script>
     """
     return html
@@ -109,21 +109,6 @@ def compare(mmu_gid, hsa_gid):
 def box_combined(mmu_gid, hsa_gid):
     return render_template(
         'combined_box_standalone.html', mmu_gid=mmu_gid, hsa_gid=hsa_gid)
-
-
-@frontend.route('/tabular/ensemble')
-def ensemble_tabular_screen():
-    return render_template('tabular_ensemble.html')
-
-
-@frontend.route('/tabular/dataset')
-def data_set_tabular_screen():
-    return render_template('tabular_data_set.html')
-
-
-@frontend.route('/navbar')
-def nav_bar_screen():
-    return render_template('navbar_only.html')
 
 
 # API routes
@@ -215,8 +200,18 @@ def plot_mch_heatmap(species, level, ptile_start, ptile_end):
     query = request.args.get('q', 'MustHaveAQueryString')
     return get_mch_heatmap(species, level, ptile_start, ptile_end, query)
 
+@frontend.route('/tabular/ensemble')
+def ensemble_tabular_screen():
+    return render_template('tabular_ensemble.html')
 
-# User related routes
+@frontend.route('/tabular/dataset')
+def data_set_tabular_screen():
+    return render_template('tabular_data_set.html')
+
+@frontend.route('/navbar')
+def nav_bar_screen():
+    return render_template('navbar_only.html')
+
 @frontend.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()

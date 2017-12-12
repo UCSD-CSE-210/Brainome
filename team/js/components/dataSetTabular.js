@@ -39,7 +39,6 @@ class MyTable extends React.Component {
             }
         ).then(data => {
             var d = data;
-            console.log(d);
             this.setState({
                 rows: d.data,
                 filteredDataList: d.data
