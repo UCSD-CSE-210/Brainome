@@ -7,6 +7,7 @@ import sqlite3
 from collections import OrderedDict
 import time
 
+import json
 import pandas
 import pandas as pd
 import json
@@ -35,17 +36,26 @@ class FailToGraphException(Exception):
 
 @content.route('/content/ensemble_list')
 def get_ensemble_list():
+ 
+    ensemble_list = next(os.walk(
+        "{}/ensembles".format(current_app.config['DATA_DIR'])))[1]
+    ensembles_json_list = []
+ 
+    for ensemble in ensemble_list:
+ 
+        # Assuming each ensemble to be it's own dataset
+        dataset_dir = "{}/ensembles/{}/datasets/".format(current_app.config['DATA_DIR'], ensemble)
+        ens_datasets = next(os.walk(dataset_dir))[1]
+        ens_dict = {"ensemble": ensemble, "datasets": "\n".join(ens_datasets)}
+        for i in range(len(ens_datasets)):
+            ens_dict["dataset_{}".format(i+1)] = ens_datasets[i]
 
-    is_privileged = 0
-
-    if is_privileged:
-        ensemble_list = next(os.walk(current_app.config['ALL_DATA_DIR']))[1]
-    else:
-        ensemble_list = next(os.walk(current_app.config['DATA_DIR']))[1]
-
-    json_ens = json.dumps({"ensembles":ensemble_list})
-
-    return json_ens
+        ensembles_json_list.append(ens_dict)
+ 
+    data_dict = {"data":ensembles_json_list}
+    ens_json = json.dumps(data_dict)
+ 
+    return ens_json
 
 # Utilities
 def species_exists(species):
@@ -58,7 +68,7 @@ def species_exists(species):
         bool: Whether if given species exists
     """
     return os.path.isdir(
-        '{}/{}'.format(current_app.config['DATA_DIR'], species))
+        '{}/ensembles/{}'.format(current_app.config['DATA_DIR'], species))
 
 
 def gene_exists(species, gene):
@@ -71,12 +81,21 @@ def gene_exists(species, gene):
     Returns:
         bool: Whether if given gene exists
     """
-    try:
-        filename = glob.glob('{}/{}/mch/{}*'.format(current_app.config[
-            'DATA_DIR'], species, gene))[0]
-    except IndexError:
+
+    datasets_path = '{}/ensembles/{}/datasets'.format(
+            current_app.config['DATA_DIR'], species)
+
+    for root, dirs, files in os.walk(datasets_path):
+        for dir in dirs:
+            try:
+                filename = \
+                    glob.glob('{}/{}/mch/{}*'.format(root, dir, gene))[0]
+                if filename:
+                    return True
+            except IndexError:
+                continue
+        
         return False
-    return True if filename else False
 
 
 def build_hover_text(labels):
@@ -173,8 +192,11 @@ def find_orthologs(mmu_gid=str(), hsa_gid=str()):
         return {'mmu_gID': None, 'hsa_gID': None}
 
     conn = sqlite3.connect(
-        '{}/orthologs.sqlite3'.format(current_app.config['DATA_DIR']))
-    conn.row_factory = sqlite3.Row  # This ensures dictionaries are returned for fetch results.
+        '{}/datasets/orthologs.sqlite3'.format(current_app.config['DATA_DIR']))
+
+    # This ensures dictionaries are returned for fetch results.
+    conn.row_factory = sqlite3.Row  
+
     cursor = conn.cursor()
 
     query_key = 'mmu_gID' if mmu_gid else 'hsa_gID'
@@ -202,8 +224,8 @@ def get_cluster_points(species):
         return None
 
     try:
-        with open('{}/{}/tsne_points_ordered.csv'.format(current_app.config['DATA_DIR'],
-                                                 species)) as fp:
+        with open('{}/ensembles/{}/tsne_points_ordered.csv'.format(
+                   current_app.config['DATA_DIR'], species)) as fp:
             return list(
                 csv.DictReader(fp, delimiter='\t', quoting=csv.QUOTE_NONE))
     except IOError:
@@ -223,8 +245,8 @@ def get_3D_cluster_points(species):
     if not species_exists(species):
         return None
     try:
-        with open('{}/{}/tsne_points_ordered_3D.csv' .format(current_app.config['DATA_DIR'],
-                                                     species)) as fp:
+        with open('{}/ensembles/{}/tsne_points_ordered_3D.csv'.format(
+                  current_app.config['DATA_DIR'], species)) as fp:
             return list(
                 csv.DictReader(fp, dialect='excel-tab'))
     except IOError:
@@ -245,7 +267,7 @@ def search_gene_names(species, query):
     if not species_exists(species):
         return []
 
-    conn = sqlite3.connect('{}/{}/gene_names.sqlite3'.format(
+    conn = sqlite3.connect('{}/ensembles/{}/species/gene_names.sqlite3'.format(
         current_app.config['DATA_DIR'], species))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -269,7 +291,7 @@ def gene_id_to_name(species, query):
     if not species_exists(species):
         return []
 
-    conn = sqlite3.connect('{}/{}/gene_names.sqlite3'.format(
+    conn = sqlite3.connect('{}/ensembles/{}/species/gene_names.sqlite3'.format(
         current_app.config['DATA_DIR'], species))
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -290,8 +312,9 @@ def get_corr_genes(species,query):
         Returns:
             dict: information of genes that are correlated with target gene.
     """
-    conn = sqlite3.connect('{}/{}/top_corr_genes.sqlite3'.format(
-        current_app.config['DATA_DIR'], species))
+    db_location = '{}/ensembles/{}/top_corr_genes.sqlite3'.format(
+        current_app.config['DATA_DIR'], species)
+    conn = sqlite3.connect(db_location)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     
@@ -325,43 +348,64 @@ def get_gene_mch(species, gene, outliers):
         list: dict with mCH data for each sample. Keys are samp, tsne_x, tsne_y, cluster_label, cluster_ordered,
          original, normalized.
     """
+
     if not species_exists(species) or not gene_exists(species, gene):
         return []
 
     cluster = pandas.DataFrame(get_cluster_points(species))
 
-    try:
-        filename = glob.glob('{}/{}/mch/{}*'.format(current_app.config[
-            'DATA_DIR'], species, gene))[0]
-    except IndexError:
-        return []
+    datasets_path = '{}/ensembles/{}/datasets'.format(
+            current_app.config['DATA_DIR'], species)
 
-    try:
-        mch = pandas.read_csv(
-            filename,
-            sep='\t',
-            header=None,
-            names=['gene', 'samp', 'original', 'normalized'])
-    except FileNotFoundError:
+    dataframe_list = []
+    root, dirs, files = next(os.walk(datasets_path))
+    for dir in dirs:
+
+        try:
+            file_string = '{}/{}/mch/{}*'.format(root, dir, gene)
+            glob_list = glob.glob(file_string)
+            filename = glob_list[0]
+            
+        except IndexError:
+            continue
+
+        try:
+            mch = pandas.read_csv(
+                filename,
+                sep='\t',
+                header=None,
+                names=['gene', 'samp', 'original', 'normalized'])
+            dataframe_list.append(mch)
+        except FileNotFoundError:
+            continue
+
+    mch = None
+    if len(dataframe_list) == 0:
         return []
+    elif len(dataframe_list) == 1:
+        mch = dataframe_list[0]
+    else:
+        mch = dataframe_list[0].append(dataframe_list[1:], ignore_index=True)
+
 
     dataframe_merged = pandas.merge(
         cluster[['samp', 'tsne_x', 'tsne_y', 'cluster_label', 'cluster_name', 'cluster_ordered', 'cluster_ortholog']],
         mch[['samp', 'original', 'normalized']],
         on='samp',
         how='left')
+
     if not outliers:
         # Outliers not wanted, remove rows > 99%ile.
         three_std_dev = dataframe_merged['normalized'].quantile(0.99)
         dataframe_merged = dataframe_merged[dataframe_merged.normalized <
-                                            three_std_dev]
+                three_std_dev]
 
     dataframe_merged['cluster_ordered'] = pandas.to_numeric(
-        dataframe_merged['cluster_ordered'], errors='coerce')
+            dataframe_merged['cluster_ordered'], errors='coerce')
     dataframe_merged['cluster_ordered'] = dataframe_merged[
-        'cluster_ordered'].astype('category')
+            'cluster_ordered'].astype('category')
     return dataframe_merged.sort_values(
-        by='cluster_ordered', ascending=True).to_dict('records')
+            by='cluster_ordered', ascending=True).to_dict('records')
 
 
 @cache.memoize(timeout=3600)
@@ -415,7 +459,6 @@ def get_cluster_plot(species, grouping):
         if not (grouping in points_3d[0]):
             grouping = "cluster_ordered"
             print("**** Using cluster_ordered")
-
 
     layout3d = Layout(
         autosize=False,
@@ -721,6 +764,7 @@ def get_mch_scatter(species, gene, level, ptile_start, ptile_end):
         str: HTML generated by Plot.ly.
     """
     points = get_gene_mch(species, gene, True)
+
     if not points:
         raise FailToGraphException
 
@@ -742,6 +786,9 @@ def get_mch_scatter(species, gene, level, ptile_start, ptile_end):
 
     # Sets mCH levels below or above the percentiles to %tile limits.
     mch_dataframe = pandas.DataFrame(mch)
+    # mch_dataframe.
+    mch_dataframe.to_csv("/srv/brainome_210/obj_1.csv")
+
     start = mch_dataframe.dropna().quantile(ptile_start)[0].tolist()
     end = mch_dataframe.dropna().quantile(ptile_end).values[0].tolist()
     mch_colors = [set_color_by_percentile(x, start, end) for x in mch]
@@ -1381,50 +1428,20 @@ def randomize_cluster_colors():
 
 
 
-@content.route('/content/metadata/<ensemble>')
-def get_metadata(ensemble):
+@content.route('/content/metadata/<dataset>')
+def get_metadata(dataset):
 
-    is_privileged = 0
-    postfix = "metadata_example.csv"
+    dataset_path = "{}/datasets".format(current_app.config['DATA_DIR']) 
+    for root, dirs, files in os.walk(dataset_path):
+        for dir in dirs:
+            meta_path = "{}/{}/{}/metadata.csv".format(dataset_path, dir, dataset)
+            if os.path.isfile(meta_path):
+                f = open(meta_path, 'r')
+                reader = csv.DictReader(f)
+                out = json.dumps({"data":[row for row in reader]})
+                return out
+        break
 
-    # datasets = ensemble.split("_")
-    # if len(datasets) > 1:
-    #     datasets = str(tuple(datasets))
-    # else:
-    #     datasets = "('"+ensemble+"')"
-    #
-    # query = "SELECT * FROM dataset_config where Dataset in " + datasets + ";"
-    # try:
-    #     conn = sqlite3.connect(db_file)
-    # except Error as e:
-    #     print(e)
-    #
-    # cur = conn.cursor()
-    # cur.execute(query)
-    #
-    # rows = cur.fetchall()
-    df = pd.DataFrame()
+    return json.dumps({"data": None})
 
-    if is_privileged:
 
-        meta_path = "{}/{}/{}".format(current_app.config['DATA_DIR'], ensemble, postfix)
-
-    else:
-
-        meta_path = "{}/{}/{}".format(current_app.config['ALL_DATA_DIR'], ensemble, postfix)
-
-    # for r in rows:
-    #     if privilege or (r[1] == 1):
-    #         meta_path = r[5] + postfix
-    #         print("Extracting data for: " + meta_path)
-    try:
-        temp = pd.read_csv(meta_path)
-        df = df.append(temp)
-    except:
-        print("File '" + meta_path + "' not found.")
-
-    if len(df) > 0:
-        df = df.reset_index()
-        return df.to_json()
-    else:
-        return False

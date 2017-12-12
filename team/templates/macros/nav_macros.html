@@ -1,4 +1,3 @@
-
 {% macro render_menu_items(endpoints) %}
     {% for endpoint, name, icon in endpoints %}
         <a class="item {% if request.endpoint == endpoint %}active{% endif %}" href="{{ url_for(endpoint) }}">
@@ -12,30 +11,34 @@
 
 {% macro header_items(current_user) %}
     {% set endpoints = [
-      ('frontend.index', 'Home', 'home')
+      ('frontend.index', 'Home', 'home'),
+      ('frontend.ensemble_tabular_screen', 'Ensembles', 'ensemble'),
+      ('frontend.data_set_tabular_screen', 'Data Sets', 'dataset')
     ]%}
-    {% set user = [] %}
-    {#    This means that we are redirecting to the frontend.admin function if the current user is auhenticated.#}
-{#    It is using the Jinja2 templates shared in the slack channel#}
-{#    #}
-    {% if current_user.is_authenticated %}
-      {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 'user')]) %}
-    {% endif %}
-    {{ render_menu_items( endpoints +  user ) }}
+    
+    {{ render_menu_items( endpoints ) }}
 {% endmacro %}
 
 {# This renders the right hand side of the navigation bar. If the user is logged in, it links to
    manage their account and logout (account routes). Otherwise, it links to register and login.
 #}
 {% macro account_items(current_user) %}
+    {% set user = [] %}
+    {% if current_user.can(255) %}
+      {% set user = ([( 'frontend.admin',  'Administrator Dashboard', 
+                        'user')]) %}
+    {% endif %}
     {% if current_user.is_authenticated %}
       {% set endpoints = [
         ('frontend.manage', 'Account', 'settings'),
         ('frontend.logout', 'Logout', 'sign out')
       ] %}
-      {{ render_menu_items(endpoints) }}
     {% else %}
+      {% set endpoints = [
+        ('frontend.login', 'Login', 'sign in')
+      ] %}
     {% endif %}
+    {{ render_menu_items(user + endpoints) }}
 {% endmacro %}
 
 {% macro create_dropdown(dropdown) %}

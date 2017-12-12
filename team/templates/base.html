@@ -1,18 +1,8 @@
+<iframe src="/navbar" scrolling="no" frameborder="0" style="position: relative; height: 41px; width: 100%;"></iframe>
 {%- extends "bootstrap/base.html" %}
 {% block title %}Single Cell Methylome{% endblock %}
 {% import "bootstrap/fixes.html" as fixes %}
 {% block head %}
-
-{% if current_user.is_authenticated %}
-    <div id="logout_div" style="padding: 20px; text-align: right">
-    <a href="/logout">Logout</a>
-    </div>
-{% else %}
-	<div id="login_div" style="padding: 20px; text-align: right">
-	<a href="/login">Login</a>
-	</div>
-{% endif %}
-
     {{super()}}
     {{fixes.ie8()}}
 {%- endblock %}
