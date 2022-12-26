@@ -1,4 +1,4 @@
-wheel==0.24.0
+wheel==0.38.1
 backports-abc==0.5
 bkcharts==0.2
 bokeh==0.12.6
